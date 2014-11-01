@@ -1,5 +1,6 @@
 import sys
 import pygame as pg
+import random
 
 SCREEN_WIDTH = 800
 SCREEN_HEIGHT = 600
@@ -7,6 +8,7 @@ CAT_WIDTH = 200
 CAT_HEIGHT = 212
 CAT_POSITION = ((SCREEN_WIDTH - CAT_WIDTH) / 2, (SCREEN_HEIGHT - CAT_HEIGHT) / 2)
 MOUSE_POSITION = CAT_POSITION
+MOUSE_DIRECTION = 0 # 0 left; 1 right; 2 down; 3 up
 
 def music():
     pg.mixer.init()
@@ -15,6 +17,8 @@ def music():
 
 def loop():
     global CAT_POSITION
+    global MOUSE_POSITION
+    global MOUSE_DIRECTION
 
     while True:
         for e in pg.event.get():
@@ -29,6 +33,10 @@ def loop():
 
         if pg.mouse.get_focused():
             CAT_POSITION = set_cat_after_mouse()
+
+        if random.randint(0, 30) == 0:
+            MOUSE_DIRECTION = random.randint(0, 3)
+        MOUSE_POSITION = run_mouse_run()
         draw()
         clock.tick(15)
 
@@ -42,6 +50,20 @@ def draw():
 def set_cat_after_mouse():
     pos = pg.mouse.get_pos()
     pos = (pos[0] - CAT_WIDTH/2, pos[1] - CAT_HEIGHT/2)
+    return pos
+
+def run_mouse_run():
+    padding = 60
+    d = random.randint(1, 8)
+    pos = MOUSE_POSITION
+    if MOUSE_DIRECTION == 0:
+        pos = (((pos[0] - d + padding) % SCREEN_WIDTH) - padding, pos[1])
+    elif MOUSE_DIRECTION == 1:
+        pos = (((pos[0] + d - padding) % SCREEN_WIDTH) + padding, pos[1])
+    elif MOUSE_DIRECTION == 2:
+        pos = (pos[0], ((pos[1] - d + padding) % SCREEN_HEIGHT) - padding)
+    elif MOUSE_DIRECTION == 3:
+        pos = (pos[0], ((pos[1] + d - padding) % SCREEN_HEIGHT) + padding)
     return pos
 
 def cat_center():
