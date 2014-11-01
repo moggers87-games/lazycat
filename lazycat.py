@@ -6,7 +6,7 @@ SCREEN_HEIGHT = 600
 CAT_WIDTH = 200
 CAT_HEIGHT = 212
 CAT_POSITION = ((SCREEN_WIDTH - CAT_WIDTH) / 2, (SCREEN_HEIGHT - CAT_HEIGHT) / 2)
-MOUSE = CAT_POSITION
+MOUSE_POSITION = CAT_POSITION
 
 def music():
     pg.mixer.init()
@@ -35,7 +35,8 @@ def loop():
 def draw():
     screen.fill((0, 0, 0))
     screen.blit(cat, CAT_POSITION)
-    pg.draw.line(screen, (255, 0, 0), pg.mouse.get_pos(), MOUSE, 5)
+    screen.blit(mouse, MOUSE_POSITION)
+    pg.draw.line(screen, (255, 0, 0), pg.mouse.get_pos(), mouse_center(), 5)
     pg.display.flip()
 
 def set_cat_after_mouse():
@@ -43,11 +44,18 @@ def set_cat_after_mouse():
     pos = (pos[0] - CAT_WIDTH/2, pos[1] -  CAT_HEIGHT/2)
     return pos
 
+def mouse_center():
+    pos = MOUSE_POSITION
+    pos = (pos[0] + CAT_WIDTH/6, pos[1] +  CAT_HEIGHT/6) # mouse is 1/3 cat
+    return pos
+
 clock = pg.time.Clock()
 
 screen = pg.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT), pg.DOUBLEBUF)
 cat = pg.image.load('lasercat.png')
 cat = pg.transform.smoothscale(cat, (CAT_WIDTH, CAT_HEIGHT))
+mouse = pg.image.load('lasermouse.png')
+mouse = pg.transform.smoothscale(mouse, (CAT_WIDTH/3, CAT_HEIGHT/3))
 
 pg.mouse.set_visible(False)
 pg.mouse.set_pos(set_cat_after_mouse())
