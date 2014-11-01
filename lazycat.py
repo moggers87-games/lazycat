@@ -20,6 +20,12 @@ def loop():
             if e.type == pg.QUIT:
                 pg.quit()
                 sys.exit()
+
+        # keyboard logic
+        key_pressed = pg.key.get_pressed()
+        if key_pressed[pg.K_q] == 1 or key_pressed[pg.K_ESCAPE] == 1:
+            pg.event.post(pg.event.Event(pg.QUIT))
+
         if pg.mouse.get_focused():
             CAT_POSITION = set_cat_after_mouse()
         draw()
