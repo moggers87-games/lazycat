@@ -6,6 +6,7 @@ SCREEN_HEIGHT = 600
 CAT_WIDTH = 200
 CAT_HEIGHT = 212
 CAT_POSITION = ((SCREEN_WIDTH - CAT_WIDTH) / 2, (SCREEN_HEIGHT - CAT_HEIGHT) / 2)
+MOUSE = CAT_POSITION
 
 def music():
     pg.mixer.init()
@@ -34,6 +35,7 @@ def loop():
 def draw():
     screen.fill((0, 0, 0))
     screen.blit(cat, CAT_POSITION)
+    pg.draw.line(screen, (255, 0, 0), pg.mouse.get_pos(), MOUSE, 5)
     pg.display.flip()
 
 def set_cat_after_mouse():
