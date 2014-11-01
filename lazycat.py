@@ -21,7 +21,7 @@ def loop():
                 pg.quit()
                 sys.exit()
         if pg.mouse.get_focused():
-            CAT_POSITION = set_cat_from_mouse()
+            CAT_POSITION = set_cat_after_mouse()
         draw()
         clock.tick(15)
 
@@ -30,7 +30,7 @@ def draw():
     screen.blit(cat, CAT_POSITION)
     pg.display.flip()
 
-def set_cat_from_mouse():
+def set_cat_after_mouse():
     pos = pg.mouse.get_pos()
     pos = (pos[0] - CAT_WIDTH/2, pos[1] -  CAT_HEIGHT/2)
     return pos
@@ -42,7 +42,7 @@ cat = pg.image.load('lasercat.png')
 cat = pg.transform.smoothscale(cat, (CAT_WIDTH, CAT_HEIGHT))
 
 pg.mouse.set_visible(False)
-pg.mouse.set_pos(set_cat_from_mouse())
+pg.mouse.set_pos(set_cat_after_mouse())
 
 
 if __name__ == '__main__':
