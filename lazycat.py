@@ -45,7 +45,19 @@ def loop():
 def draw():
     screen.fill((0, 0, 0))
     screen.blit(cat, CAT_POSITION)
-    screen.blit(mouse, MOUSE_POSITION)
+
+    if MOUSE_DIRECTION == 0:
+        r_mouse = mouse
+    if MOUSE_DIRECTION == 1:
+        r_mouse = pg.transform.rotate(mouse, 90)
+    if MOUSE_DIRECTION == 2:
+        r_mouse = pg.transform.rotate(mouse, 180)
+    if MOUSE_DIRECTION == 3:
+        r_mouse = pg.transform.rotate(mouse, 270)
+
+    r_mouse = pg.transform.rotate(r_mouse, random.randint(-5, 5))
+
+    screen.blit(r_mouse, MOUSE_POSITION)
     cat_pos, mouse_pos, in_range = cat_laser_in_range(cat_center(), mouse_center())
     if in_range:
         # magic numbers, manually guesstimated for eye centers
