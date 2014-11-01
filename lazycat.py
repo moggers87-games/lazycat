@@ -40,7 +40,7 @@ def loop():
             MOUSE_DIRECTION = random.randint(0, 3)
         MOUSE_POSITION = run_mouse_run()
         draw()
-        clock.tick(15)
+        clock.tick(24)
 
 def draw():
     screen.fill((0, 0, 0))
@@ -60,16 +60,16 @@ def set_cat_after_mouse():
 
 def run_mouse_run():
     padding = 60
-    d = random.randint(1, 8)
+    d = random.randint(1, 10)
     pos = MOUSE_POSITION
     if MOUSE_DIRECTION == 0:
         pos = (((pos[0] - d + padding) % SCREEN_WIDTH) - padding, pos[1])
     elif MOUSE_DIRECTION == 1:
-        pos = (((pos[0] + d - padding) % SCREEN_WIDTH) + padding, pos[1])
+        pos = (((pos[0] + d + padding) % SCREEN_WIDTH) - padding, pos[1])
     elif MOUSE_DIRECTION == 2:
         pos = (pos[0], ((pos[1] - d + padding) % SCREEN_HEIGHT) - padding)
     elif MOUSE_DIRECTION == 3:
-        pos = (pos[0], ((pos[1] + d - padding) % SCREEN_HEIGHT) + padding)
+        pos = (pos[0], ((pos[1] + d + padding) % SCREEN_HEIGHT) - padding)
     return pos
 
 def cat_center():
