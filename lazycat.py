@@ -36,12 +36,17 @@ def draw():
     screen.fill((0, 0, 0))
     screen.blit(cat, CAT_POSITION)
     screen.blit(mouse, MOUSE_POSITION)
-    pg.draw.line(screen, (255, 0, 0), pg.mouse.get_pos(), mouse_center(), 5)
+    pg.draw.line(screen, (255, 0, 0), cat_center(), mouse_center(), 5)
     pg.display.flip()
 
 def set_cat_after_mouse():
     pos = pg.mouse.get_pos()
-    pos = (pos[0] - CAT_WIDTH/2, pos[1] -  CAT_HEIGHT/2)
+    pos = (pos[0] - CAT_WIDTH/2, pos[1] - CAT_HEIGHT/2)
+    return pos
+
+def cat_center():
+    pos = CAT_POSITION
+    pos = (pos[0] + CAT_WIDTH/2, pos[1] + CAT_HEIGHT/2)
     return pos
 
 def mouse_center():
