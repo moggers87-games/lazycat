@@ -1,3 +1,5 @@
+# -*- coding: utf-8 -*-
+
 import math
 import sys
 import pygame as pg
@@ -90,6 +92,8 @@ def cat_laser_in_range(cat_pos, mouse_pos):
 clock = pg.time.Clock()
 
 screen = pg.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT), pg.DOUBLEBUF)
+pg.display.set_caption("L͏̷a̶͜z̸͘e҉̢ŕ͡G̴̶ư͡n͏͟!̨̕ H̶̶é͡ȩ̷h̶͏è̸e͡͝", "HE COMES!")
+
 cat = pg.image.load('lasercat.png')
 cat = pg.transform.smoothscale(cat, (CAT_WIDTH, CAT_HEIGHT))
 mouse = pg.image.load('lasermouse.png')
