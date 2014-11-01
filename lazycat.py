@@ -9,6 +9,11 @@ CAT_POSITION = ((SCREEN_WIDTH - CAT_WIDTH) / 2, (SCREEN_HEIGHT - CAT_HEIGHT) / 2
 
 clock = pg.time.Clock()
 
+def music():
+    pg.mixer.init()
+    pg.mixer.music.load("gaslampfunworks.ogg")
+    pg.mixer.music.play(-1)
+
 def loop():
     while True:
         for e in pg.event.get():
@@ -26,4 +31,5 @@ def draw():
 
 if __name__ == '__main__':
     draw()
+    music()
     loop()
