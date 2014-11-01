@@ -48,7 +48,9 @@ def draw():
     screen.blit(mouse, MOUSE_POSITION)
     cat_pos, mouse_pos, in_range = cat_laser_in_range(cat_center(), mouse_center())
     if in_range:
-        pg.draw.line(screen, (255, 0, 0), cat_pos, mouse_pos, 5)
+        # magic numbers, manually guesstimated for eye centers
+        pg.draw.line(screen, (255, 0, 0), (cat_pos[0]+35, cat_pos[1]), mouse_pos, 5)
+        pg.draw.line(screen, (255, 0, 0), (cat_pos[0]-20, cat_pos[1]), mouse_pos, 5)
     pg.display.flip()
 
 def set_cat_after_mouse():
