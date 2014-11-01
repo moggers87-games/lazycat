@@ -26,6 +26,7 @@ def loop():
         clock.tick(15)
 
 def draw():
+    screen.fill((0, 0, 0))
     screen.blit(cat, CAT_POSITION)
     pg.display.flip()
 
