@@ -1,3 +1,4 @@
+import math
 import sys
 import pygame as pg
 
@@ -7,6 +8,7 @@ CAT_WIDTH = 200
 CAT_HEIGHT = 212
 CAT_POSITION = ((SCREEN_WIDTH - CAT_WIDTH) / 2, (SCREEN_HEIGHT - CAT_HEIGHT) / 2)
 MOUSE_POSITION = CAT_POSITION
+LASER_RANGE = math.floor(CAT_WIDTH * 1.5)
 
 def music():
     pg.mixer.init()
@@ -36,7 +38,9 @@ def draw():
     screen.fill((0, 0, 0))
     screen.blit(cat, CAT_POSITION)
     screen.blit(mouse, MOUSE_POSITION)
-    pg.draw.line(screen, (255, 0, 0), cat_center(), mouse_center(), 5)
+    cat_pos, mouse_pos, in_range = cat_laser_in_range(cat_center(), mouse_center())
+    if in_range:
+        pg.draw.line(screen, (255, 0, 0), cat_pos, mouse_pos, 5)
     pg.display.flip()
 
 def set_cat_after_mouse():
@@ -53,6 +57,11 @@ def mouse_center():
     pos = MOUSE_POSITION
     pos = (pos[0] + CAT_WIDTH/6, pos[1] +  CAT_HEIGHT/6) # mouse is 1/3 cat
     return pos
+
+def cat_laser_in_range(cat_pos, mouse_pos):
+    dist = (cat_pos[0] - mouse_pos[0])**2 + (cat_pos[1] - mouse_pos[1])**2
+    result = dist < LASER_RANGE**2
+    return cat_pos, mouse_pos, result
 
 clock = pg.time.Clock()
 
