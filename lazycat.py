@@ -109,7 +109,7 @@ pg.display.set_caption("L͏̷a̶͜z̸͘e҉̢ŕ͡G̴̶ư͡n͏͟!̨̕ H̶̶é͡
 cat = pg.image.load('lasercat.png')
 cat = pg.transform.smoothscale(cat, (CAT_WIDTH, CAT_HEIGHT))
 mouse = pg.image.load('lasermouse.png')
-mouse = pg.transform.smoothscale(mouse, (CAT_WIDTH/3, CAT_HEIGHT/3))
+mouse = pg.transform.smoothscale(mouse, (int(CAT_WIDTH/3), int(CAT_HEIGHT/3)))
 
 pg.mouse.set_visible(False)
 pg.mouse.set_pos(set_cat_after_mouse())
