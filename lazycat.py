@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+from __future__ import division
 
 import math
 import sys
@@ -9,7 +10,7 @@ SCREEN_WIDTH = 800
 SCREEN_HEIGHT = 600
 CAT_WIDTH = 200
 CAT_HEIGHT = 212
-CAT_POSITION = ((SCREEN_WIDTH - CAT_WIDTH) / 2, (SCREEN_HEIGHT - CAT_HEIGHT) / 2)
+CAT_POSITION = ((SCREEN_WIDTH - CAT_WIDTH) // 2, (SCREEN_HEIGHT - CAT_HEIGHT) // 2)
 MOUSE_POSITION = CAT_POSITION
 MOUSE_DIRECTION = 0 # 0 left; 1 right; 2 down; 3 up
 LASER_RANGE = math.floor(CAT_WIDTH * 1.5)
@@ -69,7 +70,7 @@ def draw():
 
 def set_cat_after_mouse():
     pos = pg.mouse.get_pos()
-    pos = (pos[0] - CAT_WIDTH/2, pos[1] - CAT_HEIGHT/2)
+    pos = (pos[0] - CAT_WIDTH//2, pos[1] - CAT_HEIGHT//2)
     return pos
 
 def run_mouse_run():
@@ -88,12 +89,12 @@ def run_mouse_run():
 
 def cat_center():
     pos = CAT_POSITION
-    pos = (pos[0] + CAT_WIDTH/2, pos[1] + CAT_HEIGHT/2)
+    pos = (pos[0] + CAT_WIDTH//2, pos[1] + CAT_HEIGHT//2)
     return pos
 
 def mouse_center():
     pos = MOUSE_POSITION
-    pos = (pos[0] + CAT_WIDTH/6, pos[1] +  CAT_HEIGHT/6) # mouse is 1/3 cat
+    pos = (pos[0] + CAT_WIDTH//6, pos[1] +  CAT_HEIGHT//6) # mouse is 1/3 cat
     return pos
 
 def cat_laser_in_range(cat_pos, mouse_pos):
@@ -109,7 +110,7 @@ pg.display.set_caption("L͏̷a̶͜z̸͘e҉̢ŕ͡G̴̶ư͡n͏͟!̨̕ H̶̶é͡
 cat = pg.image.load('lasercat.png')
 cat = pg.transform.smoothscale(cat, (CAT_WIDTH, CAT_HEIGHT))
 mouse = pg.image.load('lasermouse.png')
-mouse = pg.transform.smoothscale(mouse, (int(CAT_WIDTH/3), int(CAT_HEIGHT/3)))
+mouse = pg.transform.smoothscale(mouse, (CAT_WIDTH // 3, CAT_HEIGHT // 3))
 
 pg.mouse.set_visible(False)
 pg.mouse.set_pos(set_cat_after_mouse())
