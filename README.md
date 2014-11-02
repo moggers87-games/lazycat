@@ -1,7 +1,7 @@
 ### Requirements
 
-* Python 2.7 (might work on 2.6, haven't tested)
-* PyGame
+* Python 2.7/3 (might work on 2.6, haven't tested)
+* PyGame (if using Python3, will need PyGame compiled for it)
 
 ### Playing
 
