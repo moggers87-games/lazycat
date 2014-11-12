@@ -81,6 +81,11 @@ def loop():
                 mouse.direction = random.randint(0, 3)
             mouse.run_away()
 
+        if random.randint(0, 50) == 0 and len(MICE) <= 23:
+            new_mouse = Mouse()
+            new_mouse.position = MICE[-1].position
+            MICE.append(new_mouse)
+
         draw()
         clock.tick(24)
 
