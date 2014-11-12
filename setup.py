@@ -8,5 +8,5 @@ setup(
     name="lazycat",
     package_data={"lazycat": ["assets/*", "LICENCE-*"]},
     packages=["lazycat"],
-    version="1.0",
+    version="3.0",
 )
