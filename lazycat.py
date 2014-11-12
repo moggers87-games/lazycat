@@ -118,5 +118,6 @@ pg.mouse.set_pos(set_cat_after_mouse())
 
 if __name__ == '__main__':
     draw()
-    music()
+    if "--mute" not in sys.argv and "-m" not in sys.argv:
+        music()
     loop()
