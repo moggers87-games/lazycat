@@ -1,0 +1,3 @@
+import lazycat
+
+lazycat.main()

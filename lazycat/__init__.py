@@ -5,6 +5,7 @@ import math
 import sys
 import pygame as pg
 import random
+from pkg_resources import resource_stream
 
 SCREEN_WIDTH = 800
 SCREEN_HEIGHT = 600
@@ -18,7 +19,7 @@ class Mouse(object):
     position = CAT_POSITION
 
     def __init__(self):
-        self.image = pg.image.load('lasermouse.png')
+        self.image = pg.image.load(resource_stream("lazycat", "assets/lasermouse.png"))
         self.image = pg.transform.smoothscale(self.image,
             (CAT_WIDTH // 3, CAT_HEIGHT // 3)
         )
@@ -56,7 +57,7 @@ MICE = [Mouse() for i in range(4)]
 
 def music():
     pg.mixer.init()
-    pg.mixer.music.load("gaslampfunworks.ogg")
+    pg.mixer.music.load(resource_stream("lazycat", "assets/gaslampfunworks.ogg"))
     pg.mixer.music.play(-1)
 
 def loop():
@@ -138,14 +139,13 @@ clock = pg.time.Clock()
 screen = pg.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT), pg.DOUBLEBUF)
 pg.display.set_caption("L͏̷a̶͜z̸͘e҉̢ŕ͡G̴̶ư͡n͏͟!̨̕ H̶̶é͡ȩ̷h̶͏è̸e͡͝", "HE COMES!")
 
-cat = pg.image.load('lasercat.png')
+cat = pg.image.load(resource_stream("lazycat", "assets/lasercat.png"))
 cat = pg.transform.smoothscale(cat, (CAT_WIDTH, CAT_HEIGHT))
 
 pg.mouse.set_visible(False)
 pg.mouse.set_pos(set_cat_after_mouse())
 
-
-if __name__ == '__main__':
+def main():
     draw()
     if "--mute" not in sys.argv and "-m" not in sys.argv:
         music()
