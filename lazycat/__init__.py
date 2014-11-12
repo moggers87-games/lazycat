@@ -94,7 +94,9 @@ def draw():
     screen.fill((0, 0, 0))
     screen.blit(cat, CAT_POSITION)
 
-    firing = False
+    firing = True in pg.mouse.get_pressed()
+    cat_pos = cat_center()
+    nearest_mouse = None
     for mouse in MICE:
         rotation = 90 * mouse.direction
         r_mouse = pg.transform.rotate(mouse.image, rotation)
@@ -102,19 +104,17 @@ def draw():
 
         screen.blit(r_mouse, mouse.position)
 
-        if True not in pg.mouse.get_pressed():
-            if firing:
-                firing = False
+        mouse_dist = cat_laser_in_range(cat_pos, mouse.center)
+        if mouse_dist is None or not firing:
             continue
-        elif firing:
-            continue
+        elif nearest_mouse is None:
+            nearest_mouse = (mouse, mouse_dist)
+        elif nearest_mouse is not None and mouse_dist < nearest_mouse[1]:
+            nearest_mouse = (mouse, mouse_dist)
 
-        cat_pos, mouse_pos, in_range = cat_laser_in_range(cat_center(), mouse.center)
-        if in_range:
-            # magic numbers, manually guesstimated for eye centers
-            pg.draw.line(screen, (255, 0, 0), (cat_pos[0]+42, cat_pos[1]), mouse_pos, 5)
-            pg.draw.line(screen, (255, 0, 0), (cat_pos[0]-22, cat_pos[1]), mouse_pos, 5)
-            firing = True
+    if nearest_mouse is not None and firing:
+        pg.draw.line(screen, (255, 0, 0), (cat_pos[0]+42, cat_pos[1]), nearest_mouse[0].center, 5)
+        pg.draw.line(screen, (255, 0, 0), (cat_pos[0]-22, cat_pos[1]), nearest_mouse[0].center, 5)
 
     pg.display.flip()
 
@@ -131,8 +131,8 @@ def cat_center():
 
 def cat_laser_in_range(cat_pos, mouse_pos):
     dist = (cat_pos[0] - mouse_pos[0])**2 + (cat_pos[1] - mouse_pos[1])**2
-    result = dist < LASER_RANGE**2
-    return cat_pos, mouse_pos, result
+    result = dist if dist < LASER_RANGE**2 else None
+    return result
 
 clock = pg.time.Clock()
 
