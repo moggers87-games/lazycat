@@ -16,6 +16,7 @@ LASER_RANGE = math.floor(CAT_WIDTH * 1.5)
 
 class Mouse(object):
     """A mouse!"""
+    health = 100.0  # 100%
     position = CAT_POSITION
 
     def __init__(self):
@@ -38,6 +39,10 @@ class Mouse(object):
         pos = self.position
         pos = (pos[0] + CAT_WIDTH//6, pos[1] +  CAT_HEIGHT//6) # mouse is 1/3 cat
         return pos
+
+    def hit(self):
+        """Hit the mouse"""
+        self.health = self.health - 2.5
 
     def run_away(self):
         padding = 60
@@ -97,7 +102,9 @@ def draw():
     firing = True in pg.mouse.get_pressed()
     cat_pos = cat_center()
     nearest_mouse = None
-    for mouse in MICE:
+    for mouse in MICE[:]:
+        if mouse.health <= 0:
+            MICE.remove(mouse)
         rotation = 90 * mouse.direction
         r_mouse = pg.transform.rotate(mouse.image, rotation)
         r_mouse = pg.transform.rotate(r_mouse, random.randint(-5, 5))
@@ -115,6 +122,7 @@ def draw():
     if nearest_mouse is not None and firing:
         pg.draw.line(screen, (255, 0, 0), (cat_pos[0]+42, cat_pos[1]), nearest_mouse[0].center, 5)
         pg.draw.line(screen, (255, 0, 0), (cat_pos[0]-22, cat_pos[1]), nearest_mouse[0].center, 5)
+        nearest_mouse[0].hit()
 
     pg.display.flip()
 
