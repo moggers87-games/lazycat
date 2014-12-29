@@ -14,6 +14,7 @@ CAT_HEIGHT = 212
 CAT_POSITION = ((SCREEN_WIDTH - CAT_WIDTH) // 2, (SCREEN_HEIGHT - CAT_HEIGHT) // 2)
 LASER_RANGE = math.floor(CAT_WIDTH * 1.5)
 
+
 class Mouse(object):
     """A mouse!"""
     health = 100.0  # 100%
@@ -124,6 +125,12 @@ def draw():
         pg.draw.line(screen, (255, 0, 0), (cat_pos[0]-22, cat_pos[1]), nearest_mouse[0].center, 5)
         nearest_mouse[0].hit()
 
+    if len(MICE) == 0:
+        win_surf = winner.render("Winner!", True, (250, 50, 250))
+        win_size = win_surf.get_size()
+        win_pos = ((SCREEN_WIDTH - win_size[0]) // 2, (SCREEN_HEIGHT - win_size[1]) // 2)
+        screen.blit(win_surf, win_pos)
+
     pg.display.flip()
 
 def set_cat_after_mouse():
@@ -149,6 +156,9 @@ pg.display.set_caption("L͏̷a̶͜z̸͘e҉̢ŕ͡G̴̶ư͡n͏͟!̨̕ H̶̶é͡
 
 cat = pg.image.load(resource_stream("lazycat", "assets/lasercat.png"))
 cat = pg.transform.smoothscale(cat, (CAT_WIDTH, CAT_HEIGHT))
+
+pg.font.init()
+winner = pg.font.SysFont("mono", 150, bold=True)
 
 pg.mouse.set_visible(False)
 pg.mouse.set_pos(set_cat_after_mouse())
