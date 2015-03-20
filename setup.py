@@ -24,5 +24,5 @@ setup(
     package_data={"lazycat": ["assets/*", "LICENCE-*"]},
     packages=["lazycat"],
     url="https://github.com/moggers87/lazycat",
-    version="3.0",
+    version="3.11",
 )
