@@ -11,8 +11,12 @@ SCREEN_WIDTH = 800
 SCREEN_HEIGHT = 600
 CAT_WIDTH = 200
 CAT_HEIGHT = 212
+LASER_RIGHT = (42, 0)
+LASER_LEFT = (-22, 0)
 CAT_POSITION = ((SCREEN_WIDTH - CAT_WIDTH) // 2, (SCREEN_HEIGHT - CAT_HEIGHT) // 2)
 LASER_RANGE = math.floor(CAT_WIDTH * 1.5)
+
+MOUSE_IMG_PATH = "assets/lasermouse.png"
 
 
 class Mouse(object):
@@ -21,7 +25,7 @@ class Mouse(object):
     position = CAT_POSITION
 
     def __init__(self):
-        self.image = pg.image.load(resource_stream("lazycat", "assets/lasermouse.png"))
+        self.image = pg.image.load(resource_stream("lazycat", MOUSE_IMG_PATH))
         self.image = pg.transform.smoothscale(self.image,
             (CAT_WIDTH // 3, CAT_HEIGHT // 3)
         )
@@ -59,7 +63,7 @@ class Mouse(object):
             pos = (pos[0], ((pos[1] + d + padding) % SCREEN_HEIGHT) - padding)
         self.position = pos
 
-MICE = [Mouse() for i in range(4)]
+MICE = []
 
 def music():
     pg.mixer.init()
@@ -67,7 +71,8 @@ def music():
     pg.mixer.music.play(-1)
 
 def loop():
-    global CAT_POSITION
+    global CAT_POSITION, MICE
+    MICE = [Mouse() for i in range(4)]
 
     while True:
         for e in pg.event.get():
@@ -121,8 +126,8 @@ def draw():
             nearest_mouse = (mouse, mouse_dist)
 
     if nearest_mouse is not None and firing:
-        pg.draw.line(screen, (255, 0, 0), (cat_pos[0]+42, cat_pos[1]), nearest_mouse[0].center, 5)
-        pg.draw.line(screen, (255, 0, 0), (cat_pos[0]-22, cat_pos[1]), nearest_mouse[0].center, 5)
+        pg.draw.line(screen, (255, 0, 0), (cat_pos[0] + LASER_RIGHT[0], cat_pos[1] + LASER_RIGHT[1]), nearest_mouse[0].center, 5)
+        pg.draw.line(screen, (255, 0, 0), (cat_pos[0] + LASER_LEFT[0], cat_pos[1] + LASER_LEFT[1]), nearest_mouse[0].center, 5)
         nearest_mouse[0].hit()
 
     if len(MICE) == 0:
@@ -164,6 +169,14 @@ pg.mouse.set_visible(False)
 pg.mouse.set_pos(set_cat_after_mouse())
 
 def main():
+    global cat, LASER_RIGHT, LASER_LEFT, MOUSE_IMG_PATH
+    if "--pete" in sys.argv:
+        cat = pg.image.load(resource_stream("lazycat", "assets/laserpete.png"))
+        cat = pg.transform.smoothscale(cat, (CAT_WIDTH, CAT_HEIGHT))
+        LASER_RIGHT = (34, -8)
+        LASER_LEFT = (-34, -8)
+        MOUSE_IMG_PATH = "assets/lasercat.png"
+
     draw()
     if "--mute" not in sys.argv and "-m" not in sys.argv:
         music()
