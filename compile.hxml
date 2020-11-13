@@ -1,0 +1,5 @@
+--library heaps:1.8.0
+--library stb_ogg_sound:git:https://github.com/moggers87/haxe_stb_ogg_sound.git#6d6a23d4ed58f6200c060870eaaa03d6eba09007
+--main Main
+--class-path lazycat
+--define resourcesPath=lazycat/assets

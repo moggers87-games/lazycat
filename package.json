@@ -1,0 +1,7 @@
+{
+    "private": true,
+    "dependencies": {},
+    "devDependencies": {
+        "uglify-js": "^3.11.6"
+    }
+}
