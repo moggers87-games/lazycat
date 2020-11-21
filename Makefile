@@ -1,4 +1,4 @@
-source := $(shell find lazycat assets -type f) .installed-deps-haxe .installed-deps-js
+source := $(shell find lazycat -type f) .installed-deps-haxe .installed-deps-js
 
 .PHONY: all
 all: export/js
