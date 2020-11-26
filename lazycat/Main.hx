@@ -131,7 +131,7 @@ class Main extends hxd.App {
 		};
 		pausedOverlay = new h2d.Bitmap(h2d.Tile.fromColor(0, s2d.width, s2d.height, 0.5));
 
-		music = hxd.Res.gaslampfunworks.play();
+		music = hxd.Res.gaslampfunworks.play(true, 0.25);
 
 		s2d.addEventListener(checkPause);
 	}
