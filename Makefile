@@ -1,4 +1,4 @@
-source := $(shell find lazycat -type f) .installed-deps-haxe .installed-deps-js
+source := $(shell find lazycat -type f) .installed-deps-haxe
 
 .PHONY: all
 all: export/js
@@ -13,10 +13,6 @@ lint: .haxelib
 
 .installed-deps-haxe: compile.hxml .haxelib
 	haxelib install compile.hxml
-	touch $@
-
-.installed-deps-js: package.json package-lock.json
-	npm install
 	touch $@
 
 export/js/lazycat.js: $(source)
