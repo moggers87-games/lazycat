@@ -21,7 +21,6 @@ lint: .haxelib
 
 export/js/lazycat.js: $(source)
 	haxe compile.hxml --js $@
-	npx uglify-js $@ --compress --mangle --output export/js/lazycat.min.js
 
 export/js/index.html: lazycat/data/index.html
 	cp lazycat/data/index.html $@
