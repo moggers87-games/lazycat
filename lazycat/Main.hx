@@ -57,6 +57,7 @@ enum abstract WinningNumbers(Int) from Int to Int {
 
 enum abstract TextStrings(String) from String to String {
 	var winner = "Winner!";
+	var paused = "Paused";
 }
 
 class Utils {
@@ -73,18 +74,21 @@ class Utils {
 class Main extends hxd.App {
 
 	var cat:h2d.Bitmap;
-	var mouseTile:h2d.Tile;
-	var mice:h2d.SpriteBatch;
 	var laser:h2d.Graphics;
+	var mice:h2d.SpriteBatch;
+	var mouseTile:h2d.Tile;
+	var music:hxd.snd.Channel;
+	var pausedOverlay:h2d.Bitmap;
+	var pausedText:h2d.Text;
 	var winningText:h2d.Text;
 
+	var paused:Bool = false;
 	var winner:Bool = false;
 
 	override function init() {
 		hxd.System.setNativeCursor(hxd.Cursor.Hide);
 
 		s2d.scaleMode = h2d.Scene.ScaleMode.LetterBox(ImageSizes.screenWidth, ImageSizes.screenHeight);
-		var bgTile = h2d.Tile.fromColor(0xFFFFFF, s2d.width, s2d.height);
 		cat = new h2d.Bitmap(hxd.Res.lasercat.toTile());
 		cat.height = ImageSizes.catHeight;
 		cat.width = ImageSizes.catWidth;
@@ -103,9 +107,11 @@ class Main extends hxd.App {
 		s2d.addChild(mice);
 		laser = new h2d.Graphics(s2d);
 
-		winningText = new h2d.Text(hxd.res.DefaultFont.get());
+		var font = hxd.res.DefaultFont.get();
+		font.resizeTo(WinningNumbers.size);
+
+		winningText = new h2d.Text(font);
 		winningText.text = TextStrings.winner;
-		winningText.font.resizeTo(WinningNumbers.size);
 		winningText.textColor = WinningNumbers.colour;
 		winningText.dropShadow = {
 			dy: WinningNumbers.dropShadowY,
@@ -114,16 +120,68 @@ class Main extends hxd.App {
 			alpha: 1
 		};
 
-		if (hxd.res.Sound.supportedFormat(OggVorbis)) {
-			var music = hxd.Res.gaslampfunworks;
-			music.play();
+		pausedText = new h2d.Text(font);
+		pausedText.text = TextStrings.paused;
+		pausedText.textColor = WinningNumbers.colour;
+		pausedText.dropShadow = {
+			dy: WinningNumbers.dropShadowY,
+			dx: WinningNumbers.dropShadowX,
+			color: WinningNumbers.dropShadowColour,
+			alpha: 1
+		};
+		pausedOverlay = new h2d.Bitmap(h2d.Tile.fromColor(0, s2d.width, s2d.height, 0.5));
+
+		music = hxd.Res.gaslampfunworks.play();
+
+		s2d.addEventListener(checkPause);
+	}
+
+	function checkPause(event:hxd.Event) {
+		switch(event.kind) {
+			case EFocusLost:
+				paused = true;
+			case EKeyDown:
+				if (event.keyCode == hxd.Key.P) {
+					paused = !paused;
+				} else {
+					paused = false;
+				}
+			case EPush:
+				paused = false;
+			default:
+		}
+
+		music.pause = paused;
+
+		if (!winner) {
+			for (mouse in mice.getElements()) {
+				cast(mouse, Mouse).paused = paused;
+			}
+
+			if (paused && pausedText.parent == null) {
+				s2d.addChild(pausedOverlay);
+				s2d.addChild(pausedText);
+				pausedText.x = screenWidth / 2 - pausedText.textWidth / 2;
+				pausedText.y = screenHeight / 2 - pausedText.textHeight / 2;
+			} else if (!paused && pausedText.parent != null) {
+				s2d.removeChild(pausedOverlay);
+				s2d.removeChild(pausedText);
+			}
 		}
 	}
 
 	override function update(dt:Float) {
+		if (paused) {
+			return;
+		}
+
 		laser.clear();
 		cat.x = s2d.mouseX - (ImageSizes.catHeight / 2);
 		cat.y = s2d.mouseY - (ImageSizes.catWidth / 2);
+
+		if (winner) {
+			return;
+		}
 
 		var miceArray = [for (m in mice.getElements()) m];
 		if (miceArray.length > 0) {
@@ -148,15 +206,10 @@ class Main extends hxd.App {
 			}
 		} else {
 			winner = true;
-			if (winningText.parent == null) {
-				s2d.addChild(winningText);
-				var textPosition = [
-					screenWidth / 2 - winningText.textWidth / 2,
-					screenHeight / 2 - winningText.textHeight / 2
-				];
-				winningText.x = textPosition[0];
-				winningText.y = textPosition[1];
-			}
+			s2d.addChild(winningText);
+			s2d.under(winningText);
+			winningText.x = screenWidth / 2 - winningText.textWidth / 2;
+			winningText.y = screenHeight / 2 - winningText.textHeight / 2;
 		}
 	}
 
@@ -193,6 +246,7 @@ class Mouse extends h2d.SpriteBatch.BatchElement {
 
 	var health:Int = 100;
 	var direction:Int;
+	public var paused:Bool = false;
 
 	public function new(t:h2d.Tile) {
 		super(t);
@@ -206,6 +260,9 @@ class Mouse extends h2d.SpriteBatch.BatchElement {
 
 	override function update(dt:Float) {
 		final padding = 60;
+		if (paused) {
+			return true;
+		}
 		var distance = Utils.randomInt(MouseNumbers.distanceMin, MouseNumbers.distanceMax);
 		var change = Utils.randomChance(MouseNumbers.directionChance);
 
@@ -240,7 +297,8 @@ class Mouse extends h2d.SpriteBatch.BatchElement {
 					direction = MouseDirection.Down;
 					change = false;
 				}
-			}
+			default:
+		}
 
 		if (change) {
 			changeDirection();
