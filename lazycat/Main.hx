@@ -156,9 +156,16 @@ class Main extends hxd.App {
 			case EPush:
 				paused = false;
 			default:
+				return;
 		}
 
 		music.pause = paused;
+
+		if (paused) {
+			hxd.System.setNativeCursor(hxd.Cursor.Default);
+		} else {
+			hxd.System.setNativeCursor(hxd.Cursor.Hide);
+		}
 
 		if (!winner) {
 			for (mouse in mice.getElements()) {
