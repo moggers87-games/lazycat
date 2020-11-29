@@ -6,7 +6,7 @@ all: export/js
 .PHONY: lint
 lint: .haxelib
 	haxelib install checkstyle
-	haxelib run checkstyle -s src
+	haxelib run checkstyle -s lazycat --exitcode
 
 .haxelib:
 	haxelib newrepo

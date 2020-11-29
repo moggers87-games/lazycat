@@ -1,12 +1,9 @@
-package;
-
+package lazycat;
 
 enum abstract ImageSizes(Int) from Int to Int {
 	var screenHeight = 600;
 	var screenWidth = 800;
 	var spriteFrames = 3;
-	var catScalePercent = 20;
-	var mouseScalePercent = 10;
 }
 
 enum abstract LaserNumbers(Int) from Int to Int {
@@ -19,10 +16,10 @@ enum abstract LaserNumbers(Int) from Int to Int {
 	var squareOfMaxLaserDistance = 40000;
 	var damage = 5;
 
-	@:op(A>B) private static function gt(lhs:LaserNumbers, rhs:LaserNumbers):Bool;
-	@:op(A>=B) private static function gte(lhs:LaserNumbers, rhs:LaserNumbers):Bool;
-	@:op(A<B) private static function lt(lhs:LaserNumbers, rhs:LaserNumbers):Bool;
-	@:op(A<=B) private static function lte(lhs:LaserNumbers, rhs:LaserNumbers):Bool;
+	@:op(A > B) static function gt(lhs:LaserNumbers, rhs:LaserNumbers):Bool;
+	@:op(A >= B) static function gte(lhs:LaserNumbers, rhs:LaserNumbers):Bool;
+	@:op(A < B) static function lt(lhs:LaserNumbers, rhs:LaserNumbers):Bool;
+	@:op(A <= B) static function lte(lhs:LaserNumbers, rhs:LaserNumbers):Bool;
 }
 
 enum abstract MouseNumbers(Int) from Int to Int {
@@ -32,19 +29,20 @@ enum abstract MouseNumbers(Int) from Int to Int {
 	var directionChance = 50;
 	var distanceMin = 1;
 	var distanceMax = 10;
+	var initialHealth = 100;
 
-	@:op(A>B) private static function gt(lhs:MouseNumbers, rhs:MouseNumbers):Bool;
-	@:op(A>=B) private static function gte(lhs:MouseNumbers, rhs:MouseNumbers):Bool;
-	@:op(A<B) private static function lt(lhs:MouseNumbers, rhs:MouseNumbers):Bool;
-	@:op(A<=B) private static function lte(lhs:MouseNumbers, rhs:MouseNumbers):Bool;
+	@:op(A > B) static function gt(lhs:MouseNumbers, rhs:MouseNumbers):Bool;
+	@:op(A >= B) static function gte(lhs:MouseNumbers, rhs:MouseNumbers):Bool;
+	@:op(A < B) static function lt(lhs:MouseNumbers, rhs:MouseNumbers):Bool;
+	@:op(A <= B) static function lte(lhs:MouseNumbers, rhs:MouseNumbers):Bool;
 }
 
 enum abstract MouseDirection(Int) from Int to Int {
-	var Right;
-	var Down;
-	var Left;
-	var Up;
-	var All;
+	var right;
+	var down;
+	var left;
+	var up;
+	var all;
 }
 
 enum abstract WinningNumbers(Int) from Int to Int {
@@ -55,18 +53,27 @@ enum abstract WinningNumbers(Int) from Int to Int {
 	var dropShadowColour = 0x909090;
 }
 
+enum abstract MiscFloats(Float) from Float to Float {
+	var musicVolume = 0.25;
+	var percentMultiplier = 0.01;
+	var overlayAlpha = 0.5;
+	var catScalePercent = 0.2;
+	var mouseScalePercent = 0.1;
+}
+
 enum abstract TextStrings(String) from String to String {
 	var winner = "Winner!";
 	var paused = "Paused";
 }
 
 class Utils {
-	static public function randomInt(start:Int, end:Int):Int {
-		var multiplier = end - start;
+
+	public static function randomInt(start:Int, end:Int):Int {
+		var multiplier:Int = end - start;
 		return Math.floor(Math.random() * multiplier) + start;
 	}
 
-	static inline public function randomChance(chance:Int):Bool {
+	public static inline function randomChance(chance:Int):Bool {
 		return randomInt(0, chance) == 0;
 	}
 }
@@ -84,14 +91,20 @@ class Main extends hxd.App {
 	var pausedText:h2d.Text;
 	var winningText:h2d.Text;
 
-	var paused:Bool = false;
-	var winner:Bool = false;
+	var paused:Bool;
+	var winner:Bool;
+
+	public function new() {
+		super();
+		paused = false;
+		winner = false;
+	}
 
 	override function init() {
 		hxd.System.setNativeCursor(hxd.Cursor.Hide);
 
 		s2d.scaleMode = h2d.Scene.ScaleMode.LetterBox(ImageSizes.screenWidth, ImageSizes.screenHeight);
-		var sprites = hxd.Res.sprites.toTile();
+		var sprites:h2d.Tile = hxd.Res.sprites.toTile();
 		spriteTileSplit = sprites.split(ImageSizes.spriteFrames, true);
 		cat = new h2d.SpriteBatch(sprites);
 		cat.hasUpdate = true;
@@ -106,7 +119,7 @@ class Main extends hxd.App {
 		mice.hasUpdate = true;
 		mice.hasRotationScale = true;
 		for (i in 0...MouseNumbers.initialCount) {
-			var mouse = new Mouse(spriteTileSplit[2]);
+			var mouse:Mouse = new Mouse(spriteTileSplit[2]);
 			mice.add(mouse);
 			mouse.x = ImageSizes.screenWidth / 2;
 			mouse.y = ImageSizes.screenHeight / 2;
@@ -114,7 +127,7 @@ class Main extends hxd.App {
 		s2d.addChild(mice);
 		laser = new h2d.Graphics(s2d);
 
-		var font = hxd.res.DefaultFont.get();
+		var font:h2d.Font = hxd.res.DefaultFont.get();
 		font.resizeTo(WinningNumbers.size);
 
 		winningText = new h2d.Text(font);
@@ -136,21 +149,26 @@ class Main extends hxd.App {
 			color: WinningNumbers.dropShadowColour,
 			alpha: 1
 		};
-		pausedOverlay = new h2d.Bitmap(h2d.Tile.fromColor(0, s2d.width, s2d.height, 0.5));
+		pausedOverlay = new h2d.Bitmap(h2d.Tile.fromColor(0, s2d.width, s2d.height, MiscFloats.overlayAlpha));
 
-		music = hxd.Res.gaslampfunworks.play(true, 0.25);
+		music = hxd.Res.gaslampfunworks.play(true, MiscFloats.musicVolume);
 
 		s2d.addEventListener(checkPause);
 	}
 
 	function checkPause(event:hxd.Event) {
-		switch(event.kind) {
+		if (winner) {
+			return;
+		}
+
+		switch (event.kind) {
 			case EFocusLost:
 				paused = true;
 			case EKeyDown:
 				if (event.keyCode == hxd.Key.P) {
 					paused = !paused;
-				} else {
+				}
+				else {
 					paused = false;
 				}
 			case EPush:
@@ -161,15 +179,14 @@ class Main extends hxd.App {
 
 		music.pause = paused;
 
-		if (paused) {
-			hxd.System.setNativeCursor(hxd.Cursor.Default);
-		} else {
+		if (!paused) {
 			hxd.System.setNativeCursor(hxd.Cursor.Hide);
 		}
 
 		if (!winner) {
-			for (mouse in mice.getElements()) {
-				cast(mouse, Mouse).paused = paused;
+			for (el in mice.getElements()) {
+				var mouse:Mouse = cast(el, Mouse);
+				mouse.paused = paused;
 			}
 
 			if (paused && pausedText.parent == null) {
@@ -177,7 +194,8 @@ class Main extends hxd.App {
 				s2d.addChild(pausedText);
 				pausedText.x = screenWidth / 2 - pausedText.textWidth / 2;
 				pausedText.y = screenHeight / 2 - pausedText.textHeight / 2;
-			} else if (!paused && pausedText.parent != null) {
+			}
+			else if (!paused && pausedText.parent != null) {
 				s2d.removeChild(pausedOverlay);
 				s2d.removeChild(pausedText);
 			}
@@ -185,57 +203,55 @@ class Main extends hxd.App {
 	}
 
 	override function update(dt:Float) {
-		if (paused) {
+		if (paused || winner) {
+			hxd.System.setNativeCursor(hxd.Cursor.Default);
 			return;
 		}
 
 		laser.clear();
 		catEyes.remove();
-		catFace.x = s2d.mouseX - catFace.scaledWidth * 0.5;
-		catFace.y = s2d.mouseY - catFace.scaledHeight * 0.5;
+		catFace.x = s2d.mouseX - catFace.scaledWidth / 2;
+		catFace.y = s2d.mouseY - catFace.scaledHeight / 2;
 
-		if (winner) {
-			return;
-		}
-
-		var miceArray = [for (m in mice.getElements()) cast(m, Mouse)];
-		if (miceArray.length > 0) {
-			if (hxd.Key.isDown(hxd.Key.MOUSE_LEFT)) {
-				cat.add(catEyes);
-				catEyes.x = catFace.x;
-				catEyes.y = catFace.y;
-				var catCentre = catFace.centre;
-				for (chosenMouse in miceArray) {
-					var mouseCentre = chosenMouse.centre;
-					var distance = Math.pow(catCentre[0] - mouseCentre[0], 2) + Math.pow(catCentre[1] - mouseCentre[1], 2);
-					if (Math.floor(distance) <= LaserNumbers.squareOfMaxLaserDistance) {
-						fireAt(chosenMouse, catCentre, mouseCentre);
-						break;
-					}
-				}
-			}
-
-			if (miceArray.length < MouseNumbers.maxCount && Utils.randomChance(MouseNumbers.breedChance)) {
-				var lastMouse = miceArray.pop();
-				var mouse = new Mouse(spriteTileSplit[2]);
-				mice.add(mouse);
-				mouse.x = lastMouse.x;
-				mouse.y = lastMouse.y;
-			}
-		} else {
+		var miceArray:Array<Mouse> = [for (m in mice.getElements()) cast(m, Mouse)];
+		if (miceArray.length == 0 ) {
+			hxd.System.setNativeCursor(hxd.Cursor.Default);
 			winner = true;
+			s2d.addChild(pausedOverlay);
 			s2d.addChild(winningText);
-			s2d.under(winningText);
 			winningText.x = screenWidth / 2 - winningText.textWidth / 2;
 			winningText.y = screenHeight / 2 - winningText.textHeight / 2;
+			return;
+		}
+		if (hxd.Key.isDown(hxd.Key.MOUSE_LEFT)) {
+			cat.add(catEyes);
+			catEyes.x = catFace.x;
+			catEyes.y = catFace.y;
+			var catCentre:Array<Float> = catFace.centre;
+			for (chosenMouse in miceArray) {
+				var mouseCentre:Array<Float> = chosenMouse.centre;
+				var distance:Float = Math.pow(catCentre[0] - mouseCentre[0], 2) + Math.pow(catCentre[1] - mouseCentre[1], 2);
+				if (Math.floor(distance) <= LaserNumbers.squareOfMaxLaserDistance) {
+					fireAt(chosenMouse, catCentre, mouseCentre);
+					break;
+				}
+			}
+		}
+
+		if (miceArray.length < MouseNumbers.maxCount && Utils.randomChance(MouseNumbers.breedChance)) {
+			var lastMouse:Mouse = miceArray.pop();
+			var mouse:Mouse = new Mouse(spriteTileSplit[2]);
+			mice.add(mouse);
+			mouse.x = lastMouse.x;
+			mouse.y = lastMouse.y;
 		}
 	}
 
 	function fireAt(mouse:Mouse, catCentre:Array<Float>, mouseCentre:Array<Float>) {
-		var rightEyeX = catCentre[0] + LaserNumbers.eyeOffsetX;
-		var rightEyeY = catCentre[1] + LaserNumbers.eyeOffsetY;
-		var leftEyeX = catCentre[0] - LaserNumbers.eyeOffsetX;
-		var leftEyeY = rightEyeY;
+		var rightEyeX:Float = catCentre[0] + LaserNumbers.eyeOffsetX;
+		var rightEyeY:Float = catCentre[1] + LaserNumbers.eyeOffsetY;
+		var leftEyeX:Float = catCentre[0] - LaserNumbers.eyeOffsetX;
+		var leftEyeY:Float = rightEyeY;
 
 		laser.beginFill(0, 0);
 		laser.lineStyle(LaserNumbers.width, LaserNumbers.colour);
@@ -245,7 +261,7 @@ class Main extends hxd.App {
 		laser.moveTo(leftEyeX, leftEyeY);
 		laser.lineTo(mouseCentre[0], mouseCentre[1]);
 
-		var eyePulse = Utils.randomInt(LaserNumbers.eyePulseMin, LaserNumbers.eyePulseMax);
+		var eyePulse:Int = Utils.randomInt(LaserNumbers.eyePulseMin, LaserNumbers.eyePulseMax);
 		laser.beginFill(LaserNumbers.colour, 1);
 		laser.lineStyle(0, 0, 0);
 		laser.drawCircle(rightEyeX, rightEyeY, eyePulse);
@@ -262,92 +278,93 @@ class Main extends hxd.App {
 	}
 }
 
-
 class ElementWithCentre extends h2d.SpriteBatch.BatchElement {
-	public var centre(get,null): Array<Float>;
-	public var scaledHeight(get,null): Float;
-	public var scaledWidth(get,null): Float;
 
-	function get_centre() {
+	public var centre(get, null): Array<Float>;
+	public var scaledHeight(get, null): Float;
+	public var scaledWidth(get, null): Float;
+
+	function get_centre(): Array<Float> {
 		return [
-			x + scaledWidth * 0.5,
-			y + scaledHeight * 0.5,
+			x + scaledWidth / 2,
+			y + scaledHeight / 2,
 		];
 	}
 
-	function get_scaledWidth() {
+	function get_scaledWidth(): Float {
 		return t.width * scaleX;
 	}
 
-	function get_scaledHeight() {
+	function get_scaledHeight(): Float {
 		return t.height * scaleY;
 	}
 }
-
 
 class Cat extends ElementWithCentre {
 
 	public function new(t:h2d.Tile) {
 		super(t);
-		scale = ImageSizes.catScalePercent / 100;
+		scale = MiscFloats.catScalePercent;
 	}
 
 }
 
 class Mouse extends ElementWithCentre {
 
-	var health:Int = 100;
+	var health:Int;
 	var direction:Int;
-	public var paused:Bool = false;
+	public var paused:Bool;
 
 	public function new(t:h2d.Tile) {
 		super(t);
-		scale = ImageSizes.mouseScalePercent / 100;
+		paused = false;
+		health = MouseNumbers.initialHealth;
+		scale = MiscFloats.mouseScalePercent;
 		changeDirection();
 	}
 
 	function changeDirection() {
-		direction = Utils.randomInt(0, 4);
+		direction = Utils.randomInt(0, MouseDirection.all);
 	}
 
-	override function update(dt:Float) {
+	override function update(dt:Float):Bool {
 		if (paused) {
 			return true;
 		}
-		var distance = Utils.randomInt(MouseNumbers.distanceMin, MouseNumbers.distanceMax);
-		var change = Utils.randomChance(MouseNumbers.directionChance);
+		var distance:Int = Utils.randomInt(MouseNumbers.distanceMin, MouseNumbers.distanceMax);
+		var change:Bool = Utils.randomChance(MouseNumbers.directionChance);
 
 		super.update(dt);
 
 		switch (direction) {
-			case MouseDirection.Right:
+			case MouseDirection.right:
 				x += distance;
-				var max = ImageSizes.screenWidth - scaledWidth;
+				var max:Float = ImageSizes.screenWidth - scaledWidth;
 				if (x > max) {
 					x = max;
-					direction = MouseDirection.Left;
+					direction = MouseDirection.left;
 					change = false;
 				}
-			case MouseDirection.Left:
+			case MouseDirection.left:
 				x -= distance;
 				if (x < 0) {
 					x = 0;
-					direction = MouseDirection.Right;
+					direction = MouseDirection.right;
 					change = false;
 				}
-			case MouseDirection.Down:
+			case MouseDirection.down:
 				y += distance;
-				var max = ImageSizes.screenHeight - scaledHeight;
+				var max:Float = ImageSizes.screenHeight - scaledHeight;
 				if (y > max) {
 					y = max;
-					direction = MouseDirection.Up;
+					direction = MouseDirection.up;
 					change = false;
 				}
-			case MouseDirection.Up:
+			case MouseDirection.up:
 				y -= distance;
 				if (y < 0) {
 					y = 0;
-					direction = MouseDirection.Down;
+					direction = MouseDirection.down;
 					change = false;
 				}
 			default:
