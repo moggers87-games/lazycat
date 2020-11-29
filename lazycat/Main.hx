@@ -4,17 +4,17 @@ package;
 enum abstract ImageSizes(Int) from Int to Int {
 	var screenHeight = 600;
 	var screenWidth = 800;
-	var catHeight = 212;
-	var catWidth = 200;
+	var spriteFrames = 3;
+	var catScalePercent = 20;
 	var mouseScalePercent = 10;
 }
 
 enum abstract LaserNumbers(Int) from Int to Int {
 	var eyePulseMin = 8;
 	var eyePulseMax = 15;
-	var leftEye = -20;
-	var rightEye = 50;
-	var colour = 0xFF0000;
+	var eyeOffsetX = 40;
+	var eyeOffsetY = 15;
+	var colour = 0xFF33CC;
 	var width = 10;
 	var squareOfMaxLaserDistance = 40000;
 	var damage = 5;
@@ -73,10 +73,12 @@ class Utils {
 
 class Main extends hxd.App {
 
-	var cat:h2d.Bitmap;
+	var spriteTileSplit:Array<h2d.Tile>;
+	var cat:h2d.SpriteBatch;
+	var catFace:Cat;
+	var catEyes:Cat;
 	var laser:h2d.Graphics;
 	var mice:h2d.SpriteBatch;
-	var mouseTile:h2d.Tile;
 	var music:hxd.snd.Channel;
 	var pausedOverlay:h2d.Bitmap;
 	var pausedText:h2d.Text;
@@ -89,17 +91,22 @@ class Main extends hxd.App {
 		hxd.System.setNativeCursor(hxd.Cursor.Hide);
 
 		s2d.scaleMode = h2d.Scene.ScaleMode.LetterBox(ImageSizes.screenWidth, ImageSizes.screenHeight);
-		cat = new h2d.Bitmap(hxd.Res.lasercat.toTile());
-		cat.height = ImageSizes.catHeight;
-		cat.width = ImageSizes.catWidth;
+		var sprites = hxd.Res.sprites.toTile();
+		spriteTileSplit = sprites.split(ImageSizes.spriteFrames, true);
+		cat = new h2d.SpriteBatch(sprites);
+		cat.hasUpdate = true;
+		cat.hasRotationScale = true;
+
+		catFace = new Cat(spriteTileSplit[0]);
+		cat.add(catFace);
+		catEyes = new Cat(spriteTileSplit[1]);
 		s2d.addChild(cat);
 
-		mouseTile = hxd.Res.lasermouse.toTile();
-		mice = new h2d.SpriteBatch(mouseTile);
+		mice = new h2d.SpriteBatch(sprites);
 		mice.hasUpdate = true;
 		mice.hasRotationScale = true;
 		for (i in 0...MouseNumbers.initialCount) {
-			var mouse = new Mouse(mouseTile);
+			var mouse = new Mouse(spriteTileSplit[2]);
 			mice.add(mouse);
 			mouse.x = ImageSizes.screenWidth / 2;
 			mouse.y = ImageSizes.screenHeight / 2;
@@ -176,22 +183,26 @@ class Main extends hxd.App {
 		}
 
 		laser.clear();
-		cat.x = s2d.mouseX - (ImageSizes.catHeight / 2);
-		cat.y = s2d.mouseY - (ImageSizes.catWidth / 2);
+		catEyes.remove();
+		catFace.x = s2d.mouseX - catFace.scaledWidth * 0.5;
+		catFace.y = s2d.mouseY - catFace.scaledHeight * 0.5;
 
 		if (winner) {
 			return;
 		}
 
-		var miceArray = [for (m in mice.getElements()) m];
+		var miceArray = [for (m in mice.getElements()) cast(m, Mouse)];
 		if (miceArray.length > 0) {
 			if (hxd.Key.isDown(hxd.Key.MOUSE_LEFT)) {
-				var catCentre = [cat.x + (cat.width * 0.5), cat.y + (cat.height * 0.5)];
+				cat.add(catEyes);
+				catEyes.x = catFace.x;
+				catEyes.y = catFace.y;
+				var catCentre = catFace.centre;
 				for (chosenMouse in miceArray) {
-					var mouseCentre = [chosenMouse.x + (chosenMouse.t.width * 0.5 * chosenMouse.scaleX), chosenMouse.y + (chosenMouse.t.height * 0.5 * chosenMouse.scaleY)];
+					var mouseCentre = chosenMouse.centre;
 					var distance = Math.pow(catCentre[0] - mouseCentre[0], 2) + Math.pow(catCentre[1] - mouseCentre[1], 2);
 					if (Math.floor(distance) <= LaserNumbers.squareOfMaxLaserDistance) {
-						fireAt(cast(chosenMouse, Mouse), catCentre, mouseCentre);
+						fireAt(chosenMouse, catCentre, mouseCentre);
 						break;
 					}
 				}
@@ -199,7 +210,7 @@ class Main extends hxd.App {
 
 			if (miceArray.length < MouseNumbers.maxCount && Utils.randomChance(MouseNumbers.breedChance)) {
 				var lastMouse = miceArray.pop();
-				var mouse = new Mouse(mouseTile);
+				var mouse = new Mouse(spriteTileSplit[2]);
 				mice.add(mouse);
 				mouse.x = lastMouse.x;
 				mouse.y = lastMouse.y;
@@ -214,22 +225,24 @@ class Main extends hxd.App {
 	}
 
 	function fireAt(mouse:Mouse, catCentre:Array<Float>, mouseCentre:Array<Float>) {
-		var rightEye = catCentre[0] + LaserNumbers.rightEye;
-		var leftEye = catCentre[0] + LaserNumbers.leftEye;
+		var rightEyeX = catCentre[0] + LaserNumbers.eyeOffsetX;
+		var rightEyeY = catCentre[1] + LaserNumbers.eyeOffsetY;
+		var leftEyeX = catCentre[0] - LaserNumbers.eyeOffsetX;
+		var leftEyeY = rightEyeY;
 
 		laser.beginFill(0, 0);
 		laser.lineStyle(LaserNumbers.width, LaserNumbers.colour);
 
-		laser.moveTo(rightEye, catCentre[1]);
+		laser.moveTo(rightEyeX, rightEyeY);
 		laser.lineTo(mouseCentre[0], mouseCentre[1]);
-		laser.moveTo(leftEye, catCentre[1]);
+		laser.moveTo(leftEyeX, leftEyeY);
 		laser.lineTo(mouseCentre[0], mouseCentre[1]);
 
 		var eyePulse = Utils.randomInt(LaserNumbers.eyePulseMin, LaserNumbers.eyePulseMax);
 		laser.beginFill(LaserNumbers.colour, 1);
 		laser.lineStyle(0, 0, 0);
-		laser.drawCircle(rightEye, catCentre[1], eyePulse);
-		laser.drawCircle(leftEye, catCentre[1], eyePulse);
+		laser.drawCircle(rightEyeX, rightEyeY, eyePulse);
+		laser.drawCircle(leftEyeX, leftEyeY, eyePulse);
 		laser.drawCircle(mouseCentre[0], mouseCentre[1], Utils.randomInt(LaserNumbers.eyePulseMin, LaserNumbers.eyePulseMax));
 		laser.endFill();
 
@@ -242,7 +255,39 @@ class Main extends hxd.App {
 	}
 }
 
-class Mouse extends h2d.SpriteBatch.BatchElement {
+
+class ElementWithCentre extends h2d.SpriteBatch.BatchElement {
+	public var centre(get,null): Array<Float>;
+	public var scaledHeight(get,null): Float;
+	public var scaledWidth(get,null): Float;
+
+	function get_centre() {
+		return [
+			x + scaledWidth * 0.5,
+			y + scaledHeight * 0.5,
+		];
+	}
+
+	function get_scaledWidth() {
+		return t.width * scaleX;
+	}
+
+	function get_scaledHeight() {
+		return t.height * scaleY;
+	}
+}
+
+
+class Cat extends ElementWithCentre {
+
+	public function new(t:h2d.Tile) {
+		super(t);
+		scale = ImageSizes.catScalePercent / 100;
+	}
+
+}
+
+class Mouse extends ElementWithCentre {
 
 	var health:Int = 100;
 	var direction:Int;
@@ -259,7 +304,6 @@ class Mouse extends h2d.SpriteBatch.BatchElement {
 	}
 
 	override function update(dt:Float) {
-		final padding = 60;
 		if (paused) {
 			return true;
 		}
@@ -271,8 +315,9 @@ class Mouse extends h2d.SpriteBatch.BatchElement {
 		switch (direction) {
 			case MouseDirection.Right:
 				x += distance;
-				if (x > batch.tile.width - padding) {
-					x = batch.tile.width - padding;
+				var max = ImageSizes.screenWidth - scaledWidth;
+				if (x > max) {
+					x = max;
 					direction = MouseDirection.Left;
 					change = false;
 				}
@@ -285,8 +330,9 @@ class Mouse extends h2d.SpriteBatch.BatchElement {
 				}
 			case MouseDirection.Down:
 				y += distance;
-				if (y > batch.tile.height - padding) {
-					y = batch.tile.height - padding;
+				var max = ImageSizes.screenHeight - scaledHeight;
+				if (y > max) {
+					y = max;
 					direction = MouseDirection.Up;
 					change = false;
 				}
