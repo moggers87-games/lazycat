@@ -50,7 +50,7 @@ enum abstract WinningNumbers(Int) from Int to Int {
 	var colour = 0xFFFFFF;
 	var dropShadowX = 7;
 	var dropShadowY = 5;
-	var dropShadowColour = 0x909090;
+	var dropShadowColour = 0x737373;
 }
 
 enum abstract MiscFloats(Float) from Float to Float {
@@ -64,6 +64,7 @@ enum abstract MiscFloats(Float) from Float to Float {
 enum abstract TextStrings(String) from String to String {
 	var winner = "Winner!";
 	var paused = "Paused";
+	var title = "LazyCat";
 }
 
 class Utils {
@@ -78,48 +79,139 @@ class Utils {
 	}
 }
 
+class Assets {
+
+	public var music:hxd.snd.Channel;
+	var spriteTileSplit:Array<h2d.Tile>;
+	public var sprites:h2d.Tile;
+	public var font:h2d.Font;
+
+	public function new() {}
+
+	public function initFonts() {
+		if (font == null) {
+			font = hxd.res.DefaultFont.get();
+			font.resizeTo(WinningNumbers.size);
+		}
+	}
+
+	public function initSprites() {
+		if (sprites == null) {
+			sprites = hxd.Res.sprites.toTile();
+		}
+		if (spriteTileSplit == null) {
+			spriteTileSplit = sprites.split(ImageSizes.spriteFrames, true);
+		}
+	}
+
+	public function catTile() {
+		return spriteTileSplit[0];
+	}
+
+	public function eyesTile() {
+		return spriteTileSplit[1];
+	}
+
+	public function mouseTile() {
+		return spriteTileSplit[2];
+	}
+
+	public function initMusic() {
+		if (music == null) {
+			music = hxd.Res.gaslampfunworks.play(true, MiscFloats.musicVolume);
+		}
+	}
+}
+
 class Main extends hxd.App {
 
-	var spriteTileSplit:Array<h2d.Tile>;
+	var game:Game;
+	var assets:Assets;
+	var titleText:h2d.Text;
+
+	public function new(assets:Assets) {
+		super();
+		this.assets = assets;
+	}
+
+	override function init() {
+		s2d.scaleMode = h2d.Scene.ScaleMode.LetterBox(ImageSizes.screenWidth, ImageSizes.screenHeight);
+
+		assets.initFonts();
+
+		titleText = new h2d.Text(assets.font);
+		titleText.text = TextStrings.title;
+		titleText.textColor = WinningNumbers.colour;
+		titleText.dropShadow = {
+			dy: WinningNumbers.dropShadowY,
+			dx: WinningNumbers.dropShadowX,
+			color: WinningNumbers.dropShadowColour,
+			alpha: 1
+		};
+
+		s2d.addChild(titleText);
+		titleText.x = screenWidth / 2 - titleText.textWidth / 2;
+		titleText.y = screenHeight / 2 - titleText.textHeight / 2;
+	}
+
+	override function update(dt:Float) {
+		if (hxd.Key.isDown(hxd.Key.MOUSE_LEFT)) {
+			game = new Game(this, assets);
+		}
+	}
+
+	static function main() {
+		hxd.Res.initEmbed();
+		new Main(new Assets());
+	}
+}
+
+class Game extends hxd.App {
+
 	var cat:h2d.SpriteBatch;
 	var catFace:Cat;
 	var catEyes:Cat;
 	var laser:h2d.Graphics;
 	var mice:h2d.SpriteBatch;
-	var music:hxd.snd.Channel;
 	var pausedOverlay:h2d.Bitmap;
 	var pausedText:h2d.Text;
 	var winningText:h2d.Text;
+	var assets:Assets;
 
 	var paused:Bool;
 	var winner:Bool;
 
-	public function new() {
+	var main:Main;
+
+	public function new(main:Main, assets:Assets) {
 		super();
-		paused = false;
-		winner = false;
+		this.main = main;
+		this.assets = assets;
 	}
 
 	override function init() {
 		hxd.System.setNativeCursor(hxd.Cursor.Hide);
-
 		s2d.scaleMode = h2d.Scene.ScaleMode.LetterBox(ImageSizes.screenWidth, ImageSizes.screenHeight);
-		var sprites:h2d.Tile = hxd.Res.sprites.toTile();
-		spriteTileSplit = sprites.split(ImageSizes.spriteFrames, true);
-		cat = new h2d.SpriteBatch(sprites);
+
+		assets.initSprites();
+
+		paused = false;
+		winner = false;
+
+		cat = new h2d.SpriteBatch(assets.sprites);
 		cat.hasUpdate = true;
 		cat.hasRotationScale = true;
 
-		catFace = new Cat(spriteTileSplit[0]);
+		catFace = new Cat(assets.catTile());
 		cat.add(catFace);
-		catEyes = new Cat(spriteTileSplit[1]);
+		catEyes = new Cat(assets.eyesTile());
 		s2d.addChild(cat);
 
-		mice = new h2d.SpriteBatch(sprites);
+		mice = new h2d.SpriteBatch(assets.sprites);
 		mice.hasUpdate = true;
 		mice.hasRotationScale = true;
 		for (i in 0...MouseNumbers.initialCount) {
-			var mouse:Mouse = new Mouse(spriteTileSplit[2]);
+			var mouse:Mouse = new Mouse(assets.mouseTile());
 			mice.add(mouse);
 			mouse.x = ImageSizes.screenWidth / 2;
 			mouse.y = ImageSizes.screenHeight / 2;
@@ -127,10 +219,9 @@ class Main extends hxd.App {
 		s2d.addChild(mice);
 		laser = new h2d.Graphics(s2d);
 
-		var font:h2d.Font = hxd.res.DefaultFont.get();
-		font.resizeTo(WinningNumbers.size);
+		assets.initFonts();
 
-		winningText = new h2d.Text(font);
+		winningText = new h2d.Text(assets.font);
 		winningText.text = TextStrings.winner;
 		winningText.textColor = WinningNumbers.colour;
 		winningText.dropShadow = {
@@ -140,7 +231,7 @@ class Main extends hxd.App {
 			alpha: 1
 		};
 
-		pausedText = new h2d.Text(font);
+		pausedText = new h2d.Text(assets.font);
 		pausedText.text = TextStrings.paused;
 		pausedText.textColor = WinningNumbers.colour;
 		pausedText.dropShadow = {
@@ -151,9 +242,9 @@ class Main extends hxd.App {
 		};
 		pausedOverlay = new h2d.Bitmap(h2d.Tile.fromColor(0, s2d.width, s2d.height, MiscFloats.overlayAlpha));
 
-		music = hxd.Res.gaslampfunworks.play(true, MiscFloats.musicVolume);
-
 		s2d.addEventListener(checkPause);
+
+		assets.initMusic();
 	}
 
 	function checkPause(event:hxd.Event) {
@@ -177,7 +268,7 @@ class Main extends hxd.App {
 				return;
 		}
 
-		music.pause = paused;
+		assets.music.pause = paused;
 
 		if (!paused) {
 			hxd.System.setNativeCursor(hxd.Cursor.Hide);
@@ -203,6 +294,7 @@ class Main extends hxd.App {
 	}
 
 	override function update(dt:Float) {
+		trace("bye");
 		if (paused || winner) {
 			hxd.System.setNativeCursor(hxd.Cursor.Default);
 			return;
@@ -240,7 +332,7 @@ class Main extends hxd.App {
 
 		if (miceArray.length < MouseNumbers.maxCount && Utils.randomChance(MouseNumbers.breedChance)) {
 			var lastMouse:Mouse = miceArray.pop();
-			var mouse:Mouse = new Mouse(spriteTileSplit[2]);
+			var mouse:Mouse = new Mouse(assets.mouseTile());
 			mice.add(mouse);
 			mouse.x = lastMouse.x;
 			mouse.y = lastMouse.y;
@@ -270,11 +362,6 @@ class Main extends hxd.App {
 		laser.endFill();
 
 		mouse.hit();
-	}
-
-	static function main() {
-		hxd.Res.initEmbed();
-		new Main();
 	}
 }
 
