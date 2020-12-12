@@ -2,13 +2,12 @@ package lazycat;
 
 import lazycat.Constants.BigFontNumbers;
 import lazycat.Constants.ImageSizes;
+import lazycat.Constants.SmallFontNumbers;
 import lazycat.Constants.TextStrings;
 
 class Main extends hxd.App {
 
-	var game:Game;
 	var assets:Assets;
-	var titleText:h2d.Text;
 
 	public function new(assets:Assets) {
 		super();
@@ -20,7 +19,7 @@ class Main extends hxd.App {
 
 		assets.initFonts();
 
-		titleText = new h2d.Text(assets.bigFont);
+		var titleText:h2d.Text = new h2d.Text(assets.bigFont);
 		titleText.text = TextStrings.title;
 		titleText.textColor = BigFontNumbers.colour;
 		titleText.dropShadow = {
@@ -33,11 +32,46 @@ class Main extends hxd.App {
 		s2d.addChild(titleText);
 		titleText.x = screenWidth / 2 - titleText.textWidth / 2;
 		titleText.y = screenHeight / 2 - titleText.textHeight / 2;
-	}
 
-	override function update(dt:Float) {
-		if (hxd.Key.isDown(hxd.Key.MOUSE_LEFT)) {
-			game = new Game(this, assets);
+		var startText:h2d.Text = new h2d.Text(assets.smallFont);
+		startText.text = TextStrings.start;
+		startText.textColor = SmallFontNumbers.colour;
+		s2d.addChild(startText);
+		startText.x = screenWidth / 2 - startText.textWidth / 2;
+		startText.y = titleText.y + titleText.textHeight;
+
+		var startInteraction:h2d.Interactive = new h2d.Interactive(startText.textWidth,
+																	startText.textHeight,
+																	startText);
+		startInteraction.onOver = function(event:hxd.Event) {
+			startText.textColor = SmallFontNumbers.selectColour;
+		}
+		startInteraction.onOut = function(event:hxd.Event) {
+			startText.textColor = SmallFontNumbers.colour;
+		}
+		startInteraction.onClick = function(event:hxd.Event) {
+			new Game(assets);
+		}
+
+		var creditsText:h2d.Text = new h2d.Text(assets.smallFont);
+		creditsText.text = TextStrings.credits;
+		creditsText.textColor = SmallFontNumbers.colour;
+		s2d.addChild(creditsText);
+		creditsText.x = screenWidth / 2 - creditsText.textWidth / 2;
+		creditsText.y = startText.y + startText.textHeight;
+
+		var creditsInteraction:h2d.Interactive = new h2d.Interactive(creditsText.textWidth,
+																	creditsText.textHeight,
+																	creditsText);
+		creditsInteraction.onOver = function(event:hxd.Event) {
+			creditsText.textColor = SmallFontNumbers.selectColour;
+		}
+		creditsInteraction.onOut = function(event:hxd.Event) {
+			creditsText.textColor = SmallFontNumbers.colour;
+		}
+		creditsInteraction.onClick = function(event:hxd.Event) {
+			hxd.System.setNativeCursor(hxd.Cursor.Default);
+			new Credits(assets);
 		}
 	}
 

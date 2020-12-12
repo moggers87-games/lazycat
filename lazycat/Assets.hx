@@ -3,6 +3,7 @@ package lazycat;
 import lazycat.Constants.BigFontNumbers;
 import lazycat.Constants.ImageSizes;
 import lazycat.Constants.MiscFloats;
+import lazycat.Constants.SmallFontNumbers;
 
 class Assets {
 
@@ -16,8 +17,12 @@ class Assets {
 
 	public function initFonts() {
 		if (bigFont == null) {
-			bigFont = hxd.res.DefaultFont.get();
+			bigFont = hxd.res.DefaultFont.get().clone();
 			bigFont.resizeTo(BigFontNumbers.size);
+		}
+		if (smallFont == null) {
+			smallFont = hxd.res.DefaultFont.get().clone();
+			smallFont.resizeTo(SmallFontNumbers.size);
 		}
 	}
 
@@ -45,6 +50,9 @@ class Assets {
 	public function initMusic() {
 		if (music == null) {
 			music = hxd.Res.gaslampfunworks.play(true, MiscFloats.musicVolume);
+		} else {
+			music.position = 0.0;
+			music.pause = false;
 		}
 	}
 }
