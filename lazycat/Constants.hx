@@ -28,6 +28,7 @@ enum abstract TextStrings(String) from String to String {
 	var start = "Start";
 	var credits = "Credits";
 	var back = "Back";
+	var version = "LazyCat version " + Utils.getVersion();
 }
 
 enum abstract MiscFloats(Float) from Float to Float {
