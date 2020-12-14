@@ -1,0 +1,16 @@
+Objective
+---------
+
+Remove all the LaserMice with LazyCat's laser beams.
+
+Controls
+--------
+
+Use your mouse to control LazyCatat. Hold the left mouse button to fire their lasers at the LaserMice. Remember: LazyCat has a limit effective range! They won't fire their laser if there are no LaserMice nearby.
+
+If you're on a touch device, just use your fingers!
+
+LaserMice Behaviour
+-------------------
+
+LaserMice move randomly around the screen and occasionally multiply. Do not try to feed LaserMice to LazyCat.
