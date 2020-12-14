@@ -36,7 +36,7 @@ class Credits extends hxd.App {
 			alpha: 1
 		};
 		s2d.addChild(titleText);
-		titleText.x = screenWidth / 2 - titleText.textWidth / 2;
+		titleText.x = ImageSizes.screenWidth / 2 - titleText.textWidth / 2;
 
 		var titleInteraction:h2d.Interactive = new h2d.Interactive(titleText.textWidth,
 																	titleText.textHeight,

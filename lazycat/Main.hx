@@ -30,14 +30,14 @@ class Main extends hxd.App {
 		};
 
 		s2d.addChild(titleText);
-		titleText.x = screenWidth / 2 - titleText.textWidth / 2;
-		titleText.y = screenHeight / 2 - titleText.textHeight / 2;
+		titleText.x = ImageSizes.screenWidth / 2 - titleText.textWidth / 2;
+		titleText.y = ImageSizes.screenHeight / 2 - titleText.textHeight / 2;
 
 		var startText:h2d.Text = new h2d.Text(assets.smallFont);
 		startText.text = TextStrings.start;
 		startText.textColor = SmallFontNumbers.colour;
 		s2d.addChild(startText);
-		startText.x = screenWidth / 2 - startText.textWidth / 2;
+		startText.x = ImageSizes.screenWidth / 2 - startText.textWidth / 2;
 		startText.y = titleText.y + titleText.textHeight;
 
 		var startInteraction:h2d.Interactive = new h2d.Interactive(startText.textWidth,
@@ -57,7 +57,7 @@ class Main extends hxd.App {
 		creditsText.text = TextStrings.credits;
 		creditsText.textColor = SmallFontNumbers.colour;
 		s2d.addChild(creditsText);
-		creditsText.x = screenWidth / 2 - creditsText.textWidth / 2;
+		creditsText.x = ImageSizes.screenWidth / 2 - creditsText.textWidth / 2;
 		creditsText.y = startText.y + startText.textHeight;
 
 		var creditsInteraction:h2d.Interactive = new h2d.Interactive(creditsText.textWidth,

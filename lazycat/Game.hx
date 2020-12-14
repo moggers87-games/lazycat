@@ -177,8 +177,8 @@ class Game extends hxd.App {
 			if (paused && pausedText.parent == null) {
 				s2d.addChild(pausedOverlay);
 				s2d.addChild(pausedText);
-				pausedText.x = screenWidth / 2 - pausedText.textWidth / 2;
-				pausedText.y = screenHeight / 2 - pausedText.textHeight / 2;
+				pausedText.x = ImageSizes.screenWidth / 2 - pausedText.textWidth / 2;
+				pausedText.y = ImageSizes.screenHeight / 2 - pausedText.textHeight / 2;
 			}
 			else if (!paused && pausedText.parent != null) {
 				s2d.removeChild(pausedOverlay);
@@ -205,11 +205,11 @@ class Game extends hxd.App {
 			s2d.addChild(pausedOverlay);
 
 			s2d.addChild(winningText);
-			winningText.x = screenWidth / 2 - winningText.textWidth / 2;
-			winningText.y = screenHeight / 2 - winningText.textHeight / 2;
+			winningText.x = ImageSizes.screenWidth / 2 - winningText.textWidth / 2;
+			winningText.y = ImageSizes.screenHeight / 2 - winningText.textHeight / 2;
 
 			s2d.addChild(backText);
-			backText.x = screenWidth / 2 - backText.textWidth / 2;
+			backText.x = ImageSizes.screenWidth / 2 - backText.textWidth / 2;
 			backText.y = winningText.y + winningText.textHeight;
 			return;
 		}
