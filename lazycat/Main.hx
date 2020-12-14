@@ -73,6 +73,12 @@ class Main extends hxd.App {
 			hxd.System.setNativeCursor(hxd.Cursor.Default);
 			new Credits(assets);
 		}
+
+		var versionText:h2d.Text = new h2d.Text(assets.smallFont);
+		versionText.text = TextStrings.version;
+		versionText.textColor = SmallFontNumbers.colour;
+		s2d.addChild(versionText);
+		versionText.y = ImageSizes.screenHeight - versionText.textHeight;
 	}
 
 	static function main() {
