@@ -33,52 +33,59 @@ class Main extends hxd.App {
 		titleText.x = ImageSizes.screenWidth / 2 - titleText.textWidth / 2;
 		titleText.y = ImageSizes.screenHeight / 2 - titleText.textHeight / 2;
 
-		var startText:h2d.Text = new h2d.Text(assets.smallFont);
-		startText.text = TextStrings.start;
-		startText.textColor = SmallFontNumbers.colour;
-		s2d.addChild(startText);
-		startText.x = ImageSizes.screenWidth / 2 - startText.textWidth / 2;
-		startText.y = titleText.y + titleText.textHeight;
+		var startText:h2d.Text = addMenuItem(
+			TextStrings.start,
+			titleText.y + titleText.textHeight,
+			function(event:hxd.Event) {
+				new Game(assets);
+			}
+		);
 
-		var startInteraction:h2d.Interactive = new h2d.Interactive(startText.textWidth,
-																	startText.textHeight,
-																	startText);
-		startInteraction.onOver = function(event:hxd.Event) {
-			startText.textColor = SmallFontNumbers.selectColour;
-		}
-		startInteraction.onOut = function(event:hxd.Event) {
-			startText.textColor = SmallFontNumbers.colour;
-		}
-		startInteraction.onClick = function(event:hxd.Event) {
-			new Game(assets);
-		}
+		var instructionsText:h2d.Text = addMenuItem(
+			TextStrings.instructions,
+			startText.y + startText.textHeight,
+			function(event:hxd.Event) {
+				hxd.System.setNativeCursor(hxd.Cursor.Default);
+				new TextScroller(assets, hxd.Res.instructions.entry.getText());
+			}
+		);
 
-		var creditsText:h2d.Text = new h2d.Text(assets.smallFont);
-		creditsText.text = TextStrings.credits;
-		creditsText.textColor = SmallFontNumbers.colour;
-		s2d.addChild(creditsText);
-		creditsText.x = ImageSizes.screenWidth / 2 - creditsText.textWidth / 2;
-		creditsText.y = startText.y + startText.textHeight;
-
-		var creditsInteraction:h2d.Interactive = new h2d.Interactive(creditsText.textWidth,
-																	creditsText.textHeight,
-																	creditsText);
-		creditsInteraction.onOver = function(event:hxd.Event) {
-			creditsText.textColor = SmallFontNumbers.selectColour;
-		}
-		creditsInteraction.onOut = function(event:hxd.Event) {
-			creditsText.textColor = SmallFontNumbers.colour;
-		}
-		creditsInteraction.onClick = function(event:hxd.Event) {
-			hxd.System.setNativeCursor(hxd.Cursor.Default);
-			new Credits(assets);
-		}
+		var creditsText:h2d.Text = addMenuItem(
+			TextStrings.credits,
+			instructionsText.y + instructionsText.textHeight,
+			function(event:hxd.Event) {
+				hxd.System.setNativeCursor(hxd.Cursor.Default);
+				new TextScroller(assets, hxd.Res.credits.entry.getText());
+			}
+		);
 
 		var versionText:h2d.Text = new h2d.Text(assets.smallFont);
 		versionText.text = TextStrings.version;
 		versionText.textColor = SmallFontNumbers.colour;
 		s2d.addChild(versionText);
 		versionText.y = ImageSizes.screenHeight - versionText.textHeight;
+	}
+
+	function addMenuItem(text, yPosition, callback):h2d.Text {
+		var textObj:h2d.Text = new h2d.Text(assets.smallFont);
+		textObj.text = text;
+		textObj.textColor = SmallFontNumbers.colour;
+		s2d.addChild(textObj);
+		textObj.x = ImageSizes.screenWidth / 2 - textObj.textWidth / 2;
+		textObj.y = yPosition;
+
+		var interaction:h2d.Interactive = new h2d.Interactive(textObj.textWidth,
+																	textObj.textHeight,
+																	textObj);
+		interaction.onOver = function(event:hxd.Event) {
+			textObj.textColor = SmallFontNumbers.selectColour;
+		}
+		interaction.onOut = function(event:hxd.Event) {
+			textObj.textColor = SmallFontNumbers.colour;
+		}
+		interaction.onClick = callback;
+
+		return textObj;
 	}
 
 	static function main() {

@@ -5,20 +5,21 @@ import lazycat.Constants.ImageSizes;
 import lazycat.Constants.SmallFontNumbers;
 import lazycat.Constants.TextStrings;
 
-class Credits extends hxd.App {
+class TextScroller extends hxd.App {
 
-	var main:Main;
 	var assets:Assets;
+	var text:String;
 
-	var creditText:h2d.Text;
+	var scrollText:h2d.Text;
 	var titleText:h2d.Text;
 
-	var yCreditMin:Float;
-	var yCreditMax:Float;
+	var yScrollMin:Float;
+	var yScrollMax:Float;
 
-	public function new(assets:Assets) {
+	public function new(assets:Assets, text:String) {
 		super();
 		this.assets = assets;
+		this.text = text;
 	}
 
 	override function init() {
@@ -61,29 +62,31 @@ class Credits extends hxd.App {
 		/* bump up to cover up weird edge case */
 		titleBackground.setPosition(0, -1);
 
-		creditText = new h2d.Text(assets.smallFont);
-		creditText.text = hxd.Res.credits.entry.getText();
-		creditText.textColor = SmallFontNumbers.colour;
-		creditText.maxWidth = ImageSizes.screenWidth - SmallFontNumbers.size * 2;
-		s2d.addChild(creditText);
-		creditText.y = BigFontNumbers.size * 1.5;
-		creditText.x = SmallFontNumbers.size;
+		scrollText = new h2d.Text(assets.smallFont);
+		scrollText.maxWidth = ImageSizes.screenWidth - SmallFontNumbers.size * 2;
+		scrollText.text = text;
+		scrollText.textColor = SmallFontNumbers.colour;
+		s2d.addChild(scrollText);
+		scrollText.y = BigFontNumbers.size * 1.5;
+		scrollText.x = SmallFontNumbers.size;
 
-		yCreditMin = -creditText.textHeight + (ImageSizes.screenHeight + titleText.textHeight);
-		yCreditMax = creditText.y;
+		yScrollMin = ImageSizes.screenHeight - scrollText.textHeight;
+		yScrollMax = scrollText.y;
 
-		s2d.under(creditText);
+		s2d.under(scrollText);
 		s2d.over(titleText);
-		s2d.addEventListener(scrollMe);
+		if (scrollText.textHeight > (ImageSizes.screenHeight - scrollText.y)) {
+			s2d.addEventListener(scrollMe);
+		}
 	}
 
 	function scrollMe(event:hxd.Event) {
 		if (event.kind == EWheel) {
-			creditText.y += (event.wheelDelta * 100);
-			if (creditText.y > yCreditMax) {
-				creditText.y = yCreditMax;
-			} else if (creditText.y < yCreditMin) {
-				creditText.y = yCreditMin;
+			scrollText.y += (event.wheelDelta * 100);
+			if (scrollText.y > yScrollMax) {
+				scrollText.y = yScrollMax;
+			} else if (scrollText.y < yScrollMin) {
+				scrollText.y = yScrollMin;
 			}
 		}
 	}
