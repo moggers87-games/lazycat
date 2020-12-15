@@ -24,6 +24,7 @@ export/js/index.html: lazycat/data/index.html
 	cp lazycat/data/index.html $@
 
 export/js: export/js/lazycat.js export/js/index.html
+	rm -f $@/*.zip
 	zip -j $@/lazycat-$(version).zip $@/*
 	date -Iseconds
 
