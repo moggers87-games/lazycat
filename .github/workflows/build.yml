@@ -1,0 +1,38 @@
+name: Build LazyCat
+on:
+  pull_request:
+    branches:
+      - meow
+  push:
+    branches:
+      - meow
+  schedule:
+    - cron: '04 07 * * *'
+
+jobs:
+  unit-tests:
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        haxe-version: ["4.1.4"]
+        os: [ubuntu-latest]
+    steps:
+      - uses: actions/checkout@v2
+        with:
+          fetch-depth: 0
+      - uses: krdlab/setup-haxe@v1
+        with:
+          haxe-version: ${{ matrix.haxe-version }}
+      - name: Build
+        run: make
+  lint:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+        with:
+          fetch-depth: 0
+      - uses: krdlab/setup-haxe@v1
+        with:
+          haxe-version: "4.1.4"
+      - name: Lint
+        run: make lint
