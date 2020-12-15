@@ -186,7 +186,7 @@
 					"new",
 					"toString"
 				],
-                "severity": "WARNING",
+                "severity": "IGNORE",
 				"ignoreOverride": true
 			}
 		},
@@ -615,7 +615,7 @@
 		{
 			"type": "TypeDocComment",
 			"props": {
-                "severity": "WARNING",
+                "severity": "IGNORE",
 				"tokens": [
 					"ABSTRACT_DEF",
 					"CLASS_DEF",

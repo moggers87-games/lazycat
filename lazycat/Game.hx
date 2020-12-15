@@ -54,8 +54,6 @@ class Game extends hxd.App {
 	var mice:h2d.SpriteBatch;
 	var pausedOverlay:h2d.Bitmap;
 	var pausedText:h2d.Text;
-	var winningText:h2d.Text;
-	var backText:h2d.Text;
 	var assets:Assets;
 
 	var paused:Bool;
@@ -64,18 +62,18 @@ class Game extends hxd.App {
 	public function new(assets:Assets) {
 		super();
 		this.assets = assets;
+
+		paused = false;
+		winner = false;
+
+		assets.initFonts();
+		assets.initMusic();
+		assets.initSprites();
 	}
 
 	override function init() {
 		hxd.System.setNativeCursor(hxd.Cursor.Hide);
 		s2d.scaleMode = h2d.Scene.ScaleMode.LetterBox(ImageSizes.screenWidth, ImageSizes.screenHeight);
-
-		assets.initFonts();
-		assets.initMusic();
-		assets.initSprites();
-
-		paused = false;
-		winner = false;
 
 		cat = new h2d.SpriteBatch(assets.sprites);
 		cat.hasUpdate = true;
@@ -97,35 +95,6 @@ class Game extends hxd.App {
 		}
 		s2d.addChild(mice);
 		laser = new h2d.Graphics(s2d);
-
-		winningText = new h2d.Text(assets.bigFont);
-		winningText.text = TextStrings.winner;
-		winningText.textColor = BigFontNumbers.colour;
-		winningText.dropShadow = {
-			dy: BigFontNumbers.dropShadowY,
-			dx: BigFontNumbers.dropShadowX,
-			color: BigFontNumbers.dropShadowColour,
-			alpha: 1
-		};
-
-		backText = new h2d.Text(assets.smallFont);
-		backText.text = TextStrings.back;
-		backText.textColor = SmallFontNumbers.colour;
-
-		var backInteraction:h2d.Interactive = new h2d.Interactive(backText.textWidth,
-																	backText.textHeight,
-																	backText);
-		backInteraction.onOver = function(event:hxd.Event) {
-			backText.textColor = SmallFontNumbers.selectColour;
-		}
-		backInteraction.onOut = function(event:hxd.Event) {
-			backText.textColor = SmallFontNumbers.colour;
-		}
-		backInteraction.onClick = function(event:hxd.Event) {
-			hxd.System.setNativeCursor(hxd.Cursor.Default);
-			assets.music.pause = true;
-			new Main(assets);
-		}
 
 		pausedText = new h2d.Text(assets.bigFont);
 		pausedText.text = TextStrings.paused;
@@ -187,6 +156,44 @@ class Game extends hxd.App {
 		}
 	}
 
+	function generateWinningText() {
+		var winningText:h2d.Text = new h2d.Text(assets.bigFont);
+		winningText.text = TextStrings.winner;
+		winningText.textColor = BigFontNumbers.colour;
+		winningText.dropShadow = {
+			dy: BigFontNumbers.dropShadowY,
+			dx: BigFontNumbers.dropShadowX,
+			color: BigFontNumbers.dropShadowColour,
+			alpha: 1
+		};
+		s2d.addChild(winningText);
+		winningText.x = ImageSizes.screenWidth / 2 - winningText.textWidth / 2;
+		winningText.y = ImageSizes.screenHeight / 2 - winningText.textHeight / 2;
+
+		var backText:h2d.Text = new h2d.Text(assets.smallFont);
+		backText.text = TextStrings.back;
+		backText.textColor = SmallFontNumbers.colour;
+
+		var backInteraction:h2d.Interactive = new h2d.Interactive(backText.textWidth,
+																	backText.textHeight,
+																	backText);
+		backInteraction.onOver = function(event:hxd.Event) {
+			backText.textColor = SmallFontNumbers.selectColour;
+		}
+		backInteraction.onOut = function(event:hxd.Event) {
+			backText.textColor = SmallFontNumbers.colour;
+		}
+		backInteraction.onClick = function(event:hxd.Event) {
+			hxd.System.setNativeCursor(hxd.Cursor.Default);
+			assets.music.pause = true;
+			new Main(assets);
+		}
+
+		s2d.addChild(backText);
+		backText.x = ImageSizes.screenWidth / 2 - backText.textWidth / 2;
+		backText.y = winningText.y + winningText.textHeight;
+	}
+
 	override function update(dt:Float) {
 		if (paused || winner) {
 			hxd.System.setNativeCursor(hxd.Cursor.Default);
@@ -204,13 +211,7 @@ class Game extends hxd.App {
 			winner = true;
 			s2d.addChild(pausedOverlay);
 
-			s2d.addChild(winningText);
-			winningText.x = ImageSizes.screenWidth / 2 - winningText.textWidth / 2;
-			winningText.y = ImageSizes.screenHeight / 2 - winningText.textHeight / 2;
-
-			s2d.addChild(backText);
-			backText.x = ImageSizes.screenWidth / 2 - backText.textWidth / 2;
-			backText.y = winningText.y + winningText.textHeight;
+			generateWinningText();
 			return;
 		}
 		if (hxd.Key.isDown(hxd.Key.MOUSE_LEFT)) {

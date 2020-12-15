@@ -13,7 +13,7 @@ lint: .haxelib
 	haxelib newrepo
 
 .installed-deps-haxe: compile.hxml .haxelib
-	haxelib install compile.hxml
+	haxelib install compile.hxml --always
 	touch $@
 
 export/js/lazycat.js: $(source)
