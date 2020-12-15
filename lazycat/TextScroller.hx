@@ -5,6 +5,10 @@ import lazycat.Constants.ImageSizes;
 import lazycat.Constants.SmallFontNumbers;
 import lazycat.Constants.TextStrings;
 
+enum abstract TextScrollerNumbers(Int) from Int to Int {
+	var scrollMultiplier = 200;
+}
+
 class TextScroller extends hxd.App {
 
 	var assets:Assets;
@@ -13,6 +17,11 @@ class TextScroller extends hxd.App {
 	var scrollText:h2d.Text;
 	var titleText:h2d.Text;
 
+	var bottomMargin:Float;
+	var leftMargin:Float;
+	var rightMargin:Float;
+	var topMargin:Float;
+
 	var yScrollMin:Float;
 	var yScrollMax:Float;
 
@@ -20,6 +29,10 @@ class TextScroller extends hxd.App {
 		super();
 		this.assets = assets;
 		this.text = text;
+		bottomMargin = 0;
+		leftMargin = SmallFontNumbers.size;
+		rightMargin = SmallFontNumbers.size;
+		topMargin = BigFontNumbers.size * 2;
 	}
 
 	override function init() {
@@ -55,7 +68,7 @@ class TextScroller extends hxd.App {
 			new Main(assets);
 		}
 
-		/* make height slightly taller so we can bump tile up later */
+		// make height slightly taller so we can bump tile up later
 		var titleBackground:h2d.Bitmap = new h2d.Bitmap(h2d.Tile.fromColor(0, s2d.width, Math.ceil(titleText.textHeight) + 1, 1));
 		s2d.addChild(titleBackground);
 
@@ -63,14 +76,14 @@ class TextScroller extends hxd.App {
 		titleBackground.setPosition(0, -1);
 
 		scrollText = new h2d.Text(assets.smallFont);
-		scrollText.maxWidth = ImageSizes.screenWidth - SmallFontNumbers.size * 2;
+		scrollText.maxWidth = ImageSizes.screenWidth - leftMargin - rightMargin;
 		scrollText.text = text;
 		scrollText.textColor = SmallFontNumbers.colour;
 		s2d.addChild(scrollText);
-		scrollText.y = BigFontNumbers.size * 1.5;
-		scrollText.x = SmallFontNumbers.size;
+		scrollText.y = topMargin;
+		scrollText.x = leftMargin;
 
-		yScrollMin = ImageSizes.screenHeight - scrollText.textHeight;
+		yScrollMin = ImageSizes.screenHeight + bottomMargin - scrollText.textHeight;
 		yScrollMax = scrollText.y;
 
 		s2d.under(scrollText);
@@ -82,10 +95,11 @@ class TextScroller extends hxd.App {
 
 	function scrollMe(event:hxd.Event) {
 		if (event.kind == EWheel) {
-			scrollText.y += (event.wheelDelta * 100);
+			scrollText.y += (event.wheelDelta * TextScrollerNumbers.scrollMultiplier);
 			if (scrollText.y > yScrollMax) {
 				scrollText.y = yScrollMax;
-			} else if (scrollText.y < yScrollMin) {
+			}
+			else if (scrollText.y < yScrollMin) {
 				scrollText.y = yScrollMin;
 			}
 		}

@@ -50,7 +50,7 @@ class Main extends hxd.App {
 			}
 		);
 
-		var creditsText:h2d.Text = addMenuItem(
+		addMenuItem(
 			TextStrings.credits,
 			instructionsText.y + instructionsText.textHeight,
 			function(event:hxd.Event) {

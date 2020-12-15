@@ -35,22 +35,23 @@ class Assets {
 		}
 	}
 
-	public function catTile() {
+	public function catTile():h2d.Tile {
 		return spriteTileSplit[0];
 	}
 
-	public function eyesTile() {
+	public function eyesTile():h2d.Tile {
 		return spriteTileSplit[1];
 	}
 
-	public function mouseTile() {
+	public function mouseTile():h2d.Tile {
 		return spriteTileSplit[2];
 	}
 
 	public function initMusic() {
 		if (music == null) {
 			music = hxd.Res.gaslampfunworks.play(true, MiscFloats.musicVolume);
-		} else {
+		}
+		else {
 			music.position = 0.0;
 			music.pause = false;
 		}
