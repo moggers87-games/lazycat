@@ -8,21 +8,28 @@
         html, body {
             margin: 0;
             padding: 0;
-            background-color: grey;
+            background-color: black;
         }
         #webgl {
             width: 100% !important;
             height: 100% !important;
         }
         #wrapper {
-            width: 133vh;
-            height: 100vh;
-            background-color: black;
+            width: 128vh;
+            height: 96vh;
+            margin: auto;
+            overflow: hidden;
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            top: 0;
+            border: 1vh solid white;
         }
         @media (max-aspect-ratio: 4/3) {
             #wrapper {
-                width: 100vw;
-                height: 75vw;
+                width: 96vw;
+                height: 72vw;
             }
         }
     </style>
