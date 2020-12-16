@@ -105,7 +105,7 @@ class Game extends hxd.App {
 			color: BigFontNumbers.dropShadowColour,
 			alpha: 1
 		};
-		pausedOverlay = new h2d.Bitmap(h2d.Tile.fromColor(0, s2d.width, s2d.height, MiscFloats.overlayAlpha));
+		pausedOverlay = new h2d.Bitmap(h2d.Tile.fromColor(0, ImageSizes.screenWidth, ImageSizes.screenHeight, MiscFloats.overlayAlpha));
 
 		s2d.addEventListener(checkPause);
 	}

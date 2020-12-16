@@ -68,8 +68,7 @@ class TextScroller extends hxd.App {
 			new Main(assets);
 		}
 
-		// make height slightly taller so we can bump tile up later
-		var titleBackground:h2d.Bitmap = new h2d.Bitmap(h2d.Tile.fromColor(0, s2d.width, Math.ceil(titleText.textHeight) + 1, 1));
+		var titleBackground:h2d.Bitmap = new h2d.Bitmap(h2d.Tile.fromColor(0, ImageSizes.screenWidth, Math.ceil(titleText.textHeight), 1));
 		s2d.addChild(titleBackground);
 
 		/* bump up to cover up weird edge case */
