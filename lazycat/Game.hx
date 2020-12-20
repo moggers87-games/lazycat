@@ -47,14 +47,16 @@ enum abstract MouseDirection(Int) from Int to Int {
 
 class Game extends hxd.App {
 
+	var assets:Assets;
 	var cat:h2d.SpriteBatch;
-	var catFace:Cat;
 	var catEyes:Cat;
+	var catFace:Cat;
 	var laser:h2d.Graphics;
 	var mice:h2d.SpriteBatch;
 	var pausedOverlay:h2d.Bitmap;
 	var pausedText:h2d.Text;
-	var assets:Assets;
+	var timer:Float;
+	var timerText:h2d.Text;
 
 	var paused:Bool;
 	var winner:Bool;
@@ -62,6 +64,8 @@ class Game extends hxd.App {
 	public function new(assets:Assets) {
 		super();
 		this.assets = assets;
+
+		timer = 0;
 
 		paused = false;
 		winner = false;
@@ -95,6 +99,11 @@ class Game extends hxd.App {
 		}
 		s2d.addChild(mice);
 		laser = new h2d.Graphics(s2d);
+
+		timerText = new h2d.Text(assets.smallFont);
+		printScore();
+		timerText.textColor = SmallFontNumbers.colour;
+		s2d.addChild(timerText);
 
 		pausedText = new h2d.Text(assets.bigFont);
 		pausedText.text = TextStrings.paused;
@@ -210,6 +219,7 @@ class Game extends hxd.App {
 			hxd.System.setNativeCursor(hxd.Cursor.Default);
 			winner = true;
 			s2d.addChild(pausedOverlay);
+			s2d.over(timerText);
 
 			generateWinningText();
 			return;
@@ -236,6 +246,9 @@ class Game extends hxd.App {
 			mouse.x = lastMouse.x;
 			mouse.y = lastMouse.y;
 		}
+
+		timer += 1;
+		printScore();
 	}
 
 	function fireAt(mouse:Mouse, catCentre:Array<Float>, mouseCentre:Array<Float>) {
@@ -261,6 +274,10 @@ class Game extends hxd.App {
 		laser.endFill();
 
 		mouse.hit();
+	}
+
+	inline function printScore() {
+		timerText.text = TextStrings.scorePrefix + Std.string(timer);
 	}
 }
 
