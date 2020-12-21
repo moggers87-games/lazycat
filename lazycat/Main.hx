@@ -46,7 +46,7 @@ class Main extends hxd.App {
 			startText.y + startText.textHeight,
 			function(event:hxd.Event) {
 				hxd.System.setNativeCursor(hxd.Cursor.Default);
-				new TextScroller(assets, hxd.Res.instructions.entry.getText());
+				new TextScroller(assets, TextStrings.instructions, hxd.Res.instructions.entry.getText());
 			}
 		);
 
@@ -55,7 +55,7 @@ class Main extends hxd.App {
 			instructionsText.y + instructionsText.textHeight,
 			function(event:hxd.Event) {
 				hxd.System.setNativeCursor(hxd.Cursor.Default);
-				new TextScroller(assets, hxd.Res.credits.entry.getText());
+				new TextScroller(assets, TextStrings.credits, hxd.Res.credits.entry.getText());
 			}
 		);
 
