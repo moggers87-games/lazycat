@@ -157,22 +157,20 @@ class Game extends hxd.App {
 			hxd.System.setNativeCursor(hxd.Cursor.Hide);
 		}
 
-		if (!winner) {
-			for (el in mice.getElements()) {
-				var mouse:Mouse = cast(el, Mouse);
-				mouse.paused = paused;
-			}
+		for (el in mice.getElements()) {
+			var mouse:Mouse = cast(el, Mouse);
+			mouse.paused = paused;
+		}
 
-			if (paused && pausedText.parent == null) {
-				s2d.addChild(pausedOverlay);
-				s2d.addChild(pausedText);
-				pausedText.x = ImageSizes.screenWidth / 2 - pausedText.textWidth / 2;
-				pausedText.y = ImageSizes.screenHeight / 2 - pausedText.textHeight / 2;
-			}
-			else if (!paused && pausedText.parent != null) {
-				s2d.removeChild(pausedOverlay);
-				s2d.removeChild(pausedText);
-			}
+		if (paused && pausedText.parent == null) {
+			s2d.addChild(pausedOverlay);
+			s2d.addChild(pausedText);
+			pausedText.x = ImageSizes.screenWidth / 2 - pausedText.textWidth / 2;
+			pausedText.y = ImageSizes.screenHeight / 2 - pausedText.textHeight / 2;
+		}
+		else if (!paused && pausedText.parent != null) {
+			s2d.removeChild(pausedOverlay);
+			s2d.removeChild(pausedText);
 		}
 	}
 
