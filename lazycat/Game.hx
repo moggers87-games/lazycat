@@ -3,6 +3,8 @@ package lazycat;
 import lazycat.Constants.BigFontNumbers;
 import lazycat.Constants.ImageSizes;
 import lazycat.Constants.MiscFloats;
+import lazycat.Constants.MiscInts;
+import lazycat.Constants.MiscStrings;
 import lazycat.Constants.SmallFontNumbers;
 import lazycat.Constants.TextStrings;
 
@@ -47,14 +49,18 @@ enum abstract MouseDirection(Int) from Int to Int {
 
 class Game extends hxd.App {
 
+	var assets:Assets;
 	var cat:h2d.SpriteBatch;
-	var catFace:Cat;
 	var catEyes:Cat;
+	var catFace:Cat;
 	var laser:h2d.Graphics;
 	var mice:h2d.SpriteBatch;
 	var pausedOverlay:h2d.Bitmap;
 	var pausedText:h2d.Text;
-	var assets:Assets;
+	var timer:Int;
+	var timerText:h2d.Text;
+	var highScore:Int;
+	var highScoreText:h2d.Text;
 
 	var paused:Bool;
 	var winner:Bool;
@@ -62,6 +68,9 @@ class Game extends hxd.App {
 	public function new(assets:Assets) {
 		super();
 		this.assets = assets;
+
+		timer = 0;
+		highScore = hxd.Save.load(MiscInts.defaultHighScore, MiscStrings.savePath);
 
 		paused = false;
 		winner = false;
@@ -95,6 +104,17 @@ class Game extends hxd.App {
 		}
 		s2d.addChild(mice);
 		laser = new h2d.Graphics(s2d);
+
+		timerText = new h2d.Text(assets.smallFont);
+		printScore();
+		timerText.textColor = SmallFontNumbers.colour;
+		s2d.addChild(timerText);
+
+		highScoreText = new h2d.Text(assets.smallFont);
+		highScoreText.text = TextStrings.highScorePrefix + Std.string(highScore);
+		highScoreText.textColor = SmallFontNumbers.colour;
+		s2d.addChild(highScoreText);
+		highScoreText.y = timerText.y + timerText.textHeight;
 
 		pausedText = new h2d.Text(assets.bigFont);
 		pausedText.text = TextStrings.paused;
@@ -210,8 +230,14 @@ class Game extends hxd.App {
 			hxd.System.setNativeCursor(hxd.Cursor.Default);
 			winner = true;
 			s2d.addChild(pausedOverlay);
+			s2d.over(timerText);
+			s2d.over(highScoreText);
 
+			if (timer < highScore) {
+				hxd.Save.save(timer, MiscStrings.savePath);
+			}
 			generateWinningText();
+
 			return;
 		}
 		if (hxd.Key.isDown(hxd.Key.MOUSE_LEFT)) {
@@ -236,6 +262,9 @@ class Game extends hxd.App {
 			mouse.x = lastMouse.x;
 			mouse.y = lastMouse.y;
 		}
+
+		timer += 1;
+		printScore();
 	}
 
 	function fireAt(mouse:Mouse, catCentre:Array<Float>, mouseCentre:Array<Float>) {
@@ -261,6 +290,10 @@ class Game extends hxd.App {
 		laser.endFill();
 
 		mouse.hit();
+	}
+
+	inline function printScore() {
+		timerText.text = TextStrings.scorePrefix + Std.string(timer);
 	}
 }
 
