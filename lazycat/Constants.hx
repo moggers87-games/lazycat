@@ -31,6 +31,7 @@ enum abstract TextStrings(String) from String to String {
 	var version = "LazyCat version " + Utils.getVersion();
 	var instructions = "Instructions";
 	var scorePrefix = "Score: ";
+	var highScorePrefix = "Best: ";
 }
 
 enum abstract MiscFloats(Float) from Float to Float {
@@ -39,4 +40,17 @@ enum abstract MiscFloats(Float) from Float to Float {
 	var overlayAlpha = 0.5;
 	var catScalePercent = 0.2;
 	var mouseScalePercent = 0.1;
+}
+
+enum abstract MiscStrings(String) from String to String {
+	var savePath = "lazycat/highscore";
+}
+
+enum abstract MiscInts(Int) from Int to Int {
+	var defaultHighScore = 1000;
+
+	@:op(A > B) static function gt(lhs:MiscInts, rhs:MiscInts):Bool;
+	@:op(A >= B) static function gte(lhs:MiscInts, rhs:MiscInts):Bool;
+	@:op(A < B) static function lt(lhs:MiscInts, rhs:MiscInts):Bool;
+	@:op(A <= B) static function lte(lhs:MiscInts, rhs:MiscInts):Bool;
 }
