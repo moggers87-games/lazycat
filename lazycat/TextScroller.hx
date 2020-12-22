@@ -121,12 +121,10 @@ class TextScroller extends hxd.App {
 																	backText.textHeight,
 																	backText);
 		backInteraction.onOver = function(event:hxd.Event) {
-			backText.textColor = BigFontNumbers.dropShadowColour;
-			backText.dropShadow.color = BigFontNumbers.colour;
+			backText.textColor = SmallFontNumbers.selectColour;
 		}
 		backInteraction.onOut = function(event:hxd.Event) {
-			backText.textColor = BigFontNumbers.colour;
-			backText.dropShadow.color = BigFontNumbers.dropShadowColour;
+			backText.textColor = SmallFontNumbers.colour;
 		}
 		backInteraction.onClick = function(event:hxd.Event) {
 			hxd.System.setNativeCursor(hxd.Cursor.Default);
