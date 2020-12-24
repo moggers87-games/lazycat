@@ -146,9 +146,9 @@ class TextScroller extends hxd.App {
 		backText.x = ImageSizes.screenWidth / 2 - backText.textWidth / 2;
 		backText.y = ImageSizes.screenHeight - backText.textHeight;
 
-		var backInteraction = new h2d.Interactive(backText.textWidth,
-																	backText.textHeight,
-																	backText);
+		var backInteraction = new h2d.Interactive(backText.textWidth * 2,
+													backText.textHeight,
+													backText);
 		backInteraction.onOver = function(event:hxd.Event) {
 			backText.textColor = SmallFontNumbers.selectColour;
 		}

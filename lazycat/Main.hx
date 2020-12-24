@@ -8,6 +8,7 @@ import lazycat.Constants.TextStrings;
 class Main extends hxd.App {
 
 	var assets:Assets;
+	var titleText:h2d.Text;
 
 	public function new(assets:Assets) {
 		super();
@@ -19,7 +20,7 @@ class Main extends hxd.App {
 
 		assets.initFonts();
 
-		var titleText = new h2d.Text(assets.bigFont);
+		titleText = new h2d.Text(assets.bigFont);
 		titleText.text = TextStrings.title;
 		titleText.textColor = BigFontNumbers.colour;
 		titleText.dropShadow = {
@@ -74,9 +75,9 @@ class Main extends hxd.App {
 		textObj.x = ImageSizes.screenWidth / 2 - textObj.textWidth / 2;
 		textObj.y = yPosition;
 
-		var interaction = new h2d.Interactive(textObj.textWidth,
-																	textObj.textHeight,
-																	textObj);
+		var interaction = new h2d.Interactive(titleText.textWidth,
+												textObj.textHeight,
+												textObj);
 		interaction.onOver = function(event:hxd.Event) {
 			textObj.textColor = SmallFontNumbers.selectColour;
 		}

@@ -203,9 +203,9 @@ class Game extends hxd.App {
 		backText.text = TextStrings.back;
 		backText.textColor = SmallFontNumbers.colour;
 
-		var backInteraction = new h2d.Interactive(backText.textWidth,
-																	backText.textHeight,
-																	backText);
+		var backInteraction = new h2d.Interactive(winningText.textWidth,
+													backText.textHeight,
+													backText);
 		backInteraction.onOver = function(event:hxd.Event) {
 			backText.textColor = SmallFontNumbers.selectColour;
 		}
