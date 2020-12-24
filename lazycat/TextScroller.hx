@@ -24,8 +24,9 @@ class TextScroller extends hxd.App {
 	var rightMargin:Float;
 	var topMargin:Float;
 
-	var yScrollMin:Float;
+	var dragScrollingLastPosition:Float;
 	var yScrollMax:Float;
+	var yScrollMin:Float;
 
 	public function new(assets:Assets, title:String, text:String) {
 		super();
@@ -64,15 +65,43 @@ class TextScroller extends hxd.App {
 		}
 	}
 
+	function dragScroll(event:hxd.Event) {
+		event.propagate = false;
+		switch (event.kind) {
+			case ERelease, EReleaseOutside, EFocusLost, EOut:
+				s2d.stopDrag();
+			case EMove:
+				scrollText.y += event.relY - dragScrollingLastPosition;
+				dragScrollingLastPosition = event.relY;
+				limitScrollY();
+			default:
+		}
+	}
+
 	function scrollMe(event:hxd.Event) {
-		if (event.kind == EWheel) {
-			scrollText.y += (event.wheelDelta * TextScrollerNumbers.scrollMultiplier);
-			if (scrollText.y > yScrollMax) {
-				scrollText.y = yScrollMax;
-			}
-			else if (scrollText.y < yScrollMin) {
-				scrollText.y = yScrollMin;
-			}
+		switch (event.kind) {
+			case EWheel:
+				scrollText.y += (event.wheelDelta * TextScrollerNumbers.scrollMultiplier);
+				limitScrollY();
+			case EPush:
+				if (event.relY > topMargin && event.relY < (ImageSizes.screenHeight - bottomMargin)) {
+					dragScrollingLastPosition = event.relY;
+					s2d.startDrag(dragScroll);
+				}
+				else {
+					return;
+				}
+			default:
+				return;
+		}
+	}
+
+	function limitScrollY() {
+		if (scrollText.y > yScrollMax) {
+			scrollText.y = yScrollMax;
+		}
+		else if (scrollText.y < yScrollMin) {
+			scrollText.y = yScrollMin;
 		}
 	}
 
