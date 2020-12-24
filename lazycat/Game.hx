@@ -128,6 +128,17 @@ class Game extends hxd.App {
 		pausedOverlay = new h2d.Bitmap(h2d.Tile.fromColor(0, ImageSizes.screenWidth, ImageSizes.screenHeight, MiscFloats.overlayAlpha));
 
 		s2d.addEventListener(checkPause);
+		s2d.addEventListener(moveCat);
+	}
+
+	function moveCat(event:hxd.Event) {
+		if (winner || paused) {
+			return;
+		}
+		if (event.kind == EMove) {
+			catFace.x = event.relX - catFace.scaledWidth / 2;
+			catFace.y = event.relY - catFace.scaledHeight / 2;
+		}
 	}
 
 	function checkPause(event:hxd.Event) {
@@ -192,9 +203,9 @@ class Game extends hxd.App {
 		backText.text = TextStrings.back;
 		backText.textColor = SmallFontNumbers.colour;
 
-		var backInteraction = new h2d.Interactive(backText.textWidth,
-																	backText.textHeight,
-																	backText);
+		var backInteraction = new h2d.Interactive(winningText.textWidth,
+													backText.textHeight,
+													backText);
 		backInteraction.onOver = function(event:hxd.Event) {
 			backText.textColor = SmallFontNumbers.selectColour;
 		}
@@ -220,8 +231,6 @@ class Game extends hxd.App {
 
 		laser.clear();
 		catEyes.remove();
-		catFace.x = s2d.mouseX - catFace.scaledWidth / 2;
-		catFace.y = s2d.mouseY - catFace.scaledHeight / 2;
 
 		var miceArray:Array<Mouse> = [for (m in mice.getElements()) cast(m, Mouse)];
 		if (miceArray.length == 0 ) {
