@@ -19,7 +19,7 @@ class Main extends hxd.App {
 
 		assets.initFonts();
 
-		var titleText:h2d.Text = new h2d.Text(assets.bigFont);
+		var titleText = new h2d.Text(assets.bigFont);
 		titleText.text = TextStrings.title;
 		titleText.textColor = BigFontNumbers.colour;
 		titleText.dropShadow = {
@@ -59,7 +59,7 @@ class Main extends hxd.App {
 			}
 		);
 
-		var versionText:h2d.Text = new h2d.Text(assets.smallFont);
+		var versionText = new h2d.Text(assets.smallFont);
 		versionText.text = TextStrings.version;
 		versionText.textColor = SmallFontNumbers.colour;
 		s2d.addChild(versionText);
@@ -67,14 +67,14 @@ class Main extends hxd.App {
 	}
 
 	function addMenuItem(text, yPosition, callback):h2d.Text {
-		var textObj:h2d.Text = new h2d.Text(assets.smallFont);
+		var textObj = new h2d.Text(assets.smallFont);
 		textObj.text = text;
 		textObj.textColor = SmallFontNumbers.colour;
 		s2d.addChild(textObj);
 		textObj.x = ImageSizes.screenWidth / 2 - textObj.textWidth / 2;
 		textObj.y = yPosition;
 
-		var interaction:h2d.Interactive = new h2d.Interactive(textObj.textWidth,
+		var interaction = new h2d.Interactive(textObj.textWidth,
 																	textObj.textHeight,
 																	textObj);
 		interaction.onOver = function(event:hxd.Event) {

@@ -89,7 +89,7 @@ class TextScroller extends hxd.App {
 		s2d.addChild(titleText);
 		titleText.x = ImageSizes.screenWidth / 2 - titleText.textWidth / 2;
 
-		var titleInteraction:h2d.Interactive = new h2d.Interactive(titleText.textWidth,
+		var titleInteraction = new h2d.Interactive(titleText.textWidth,
 																	titleText.textHeight,
 																	titleText);
 		titleInteraction.onOver = function(event:hxd.Event) {
@@ -105,7 +105,7 @@ class TextScroller extends hxd.App {
 			new Main(assets);
 		}
 
-		var titleBackground:h2d.Bitmap = new h2d.Bitmap(h2d.Tile.fromColor(0, ImageSizes.screenWidth, Math.ceil(titleText.textHeight), 1));
+		var titleBackground = new h2d.Bitmap(h2d.Tile.fromColor(0, ImageSizes.screenWidth, Math.ceil(titleText.textHeight), 1));
 		s2d.addChild(titleBackground);
 	}
 
@@ -117,7 +117,7 @@ class TextScroller extends hxd.App {
 		backText.x = ImageSizes.screenWidth / 2 - backText.textWidth / 2;
 		backText.y = ImageSizes.screenHeight - backText.textHeight;
 
-		var backInteraction:h2d.Interactive = new h2d.Interactive(backText.textWidth,
+		var backInteraction = new h2d.Interactive(backText.textWidth,
 																	backText.textHeight,
 																	backText);
 		backInteraction.onOver = function(event:hxd.Event) {
@@ -131,7 +131,7 @@ class TextScroller extends hxd.App {
 			new Main(assets);
 		}
 
-		var backBackground:h2d.Bitmap = new h2d.Bitmap(h2d.Tile.fromColor(0, ImageSizes.screenWidth, Math.ceil(backText.textHeight), 1));
+		var backBackground = new h2d.Bitmap(h2d.Tile.fromColor(0, ImageSizes.screenWidth, Math.ceil(backText.textHeight), 1));
 		s2d.addChild(backBackground);
 		backBackground.y = backText.y;
 	}

@@ -97,7 +97,7 @@ class Game extends hxd.App {
 		mice.hasUpdate = true;
 		mice.hasRotationScale = true;
 		for (i in 0...MouseNumbers.initialCount) {
-			var mouse:Mouse = new Mouse(assets.mouseTile());
+			var mouse = new Mouse(assets.mouseTile());
 			mice.add(mouse);
 			mouse.x = ImageSizes.screenWidth / 2;
 			mouse.y = ImageSizes.screenHeight / 2;
@@ -175,7 +175,7 @@ class Game extends hxd.App {
 	}
 
 	function generateWinningText() {
-		var winningText:h2d.Text = new h2d.Text(assets.bigFont);
+		var winningText = new h2d.Text(assets.bigFont);
 		winningText.text = TextStrings.winner;
 		winningText.textColor = BigFontNumbers.colour;
 		winningText.dropShadow = {
@@ -188,11 +188,11 @@ class Game extends hxd.App {
 		winningText.x = ImageSizes.screenWidth / 2 - winningText.textWidth / 2;
 		winningText.y = ImageSizes.screenHeight / 2 - winningText.textHeight / 2;
 
-		var backText:h2d.Text = new h2d.Text(assets.smallFont);
+		var backText = new h2d.Text(assets.smallFont);
 		backText.text = TextStrings.back;
 		backText.textColor = SmallFontNumbers.colour;
 
-		var backInteraction:h2d.Interactive = new h2d.Interactive(backText.textWidth,
+		var backInteraction = new h2d.Interactive(backText.textWidth,
 																	backText.textHeight,
 																	backText);
 		backInteraction.onOver = function(event:hxd.Event) {
@@ -255,7 +255,7 @@ class Game extends hxd.App {
 
 		if (miceArray.length < MouseNumbers.maxCount && Utils.randomChance(MouseNumbers.breedChance)) {
 			var lastMouse:Mouse = miceArray.pop();
-			var mouse:Mouse = new Mouse(assets.mouseTile());
+			var mouse = new Mouse(assets.mouseTile());
 			mice.add(mouse);
 			mouse.x = lastMouse.x;
 			mouse.y = lastMouse.y;
