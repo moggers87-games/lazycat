@@ -48,6 +48,7 @@ enum abstract MiscStrings(String) from String to String {
 
 enum abstract MiscInts(Int) from Int to Int {
 	var defaultHighScore = 1000;
+	var catMove = 3;
 
 	@:op(A > B) static function gt(lhs:MiscInts, rhs:MiscInts):Bool;
 	@:op(A >= B) static function gte(lhs:MiscInts, rhs:MiscInts):Bool;
