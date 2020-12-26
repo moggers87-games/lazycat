@@ -136,6 +136,7 @@ class Game extends hxd.App {
 			return;
 		}
 		if (event.kind == EMove) {
+			event.propagate = false;
 			catFace.x = event.relX - catFace.scaledWidth / 2;
 			catFace.y = event.relY - catFace.scaledHeight / 2;
 		}
