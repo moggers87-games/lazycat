@@ -55,3 +55,23 @@ enum abstract MiscInts(Int) from Int to Int {
 	@:op(A < B) static function lt(lhs:MiscInts, rhs:MiscInts):Bool;
 	@:op(A <= B) static function lte(lhs:MiscInts, rhs:MiscInts):Bool;
 }
+
+class Controls {
+	public static var fireLasers:haxe.ds.ReadOnlyArray<Int> = [hxd.Key.MOUSE_LEFT, hxd.Key.SPACE];
+	public static var moveUp:haxe.ds.ReadOnlyArray<Int> = [hxd.Key.UP];
+	public static var moveDown:haxe.ds.ReadOnlyArray<Int> = [hxd.Key.DOWN];
+	public static var moveLeft:haxe.ds.ReadOnlyArray<Int> = [hxd.Key.LEFT];
+	public static var moveRight:haxe.ds.ReadOnlyArray<Int> = [hxd.Key.RIGHT];
+	public static var back:haxe.ds.ReadOnlyArray<Int> = [hxd.Key.ESCAPE];
+	public static var pause:haxe.ds.ReadOnlyArray<Int> = [hxd.Key.ESCAPE, hxd.Key.P];
+
+	public static function isDown(keys:Iterable<Int>) {
+		for (key in keys) {
+			if (inline hxd.Key.isDown(key)) {
+				return true;
+			}
+		}
+		return false;
+	}
+
+}

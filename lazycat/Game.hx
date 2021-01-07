@@ -7,6 +7,7 @@ import lazycat.Constants.MiscInts;
 import lazycat.Constants.MiscStrings;
 import lazycat.Constants.SmallFontNumbers;
 import lazycat.Constants.TextStrings;
+import lazycat.Constants.Controls;
 
 enum abstract LaserNumbers(Int) from Int to Int {
 	var eyePulseMin = 8;
@@ -153,7 +154,7 @@ class Game extends hxd.App {
 			case EFocusLost:
 				paused = true;
 			case EKeyDown:
-				if (event.keyCode == hxd.Key.P) {
+				if (Controls.pause.contains(event.keyCode)) {
 					paused = !paused;
 				}
 				else {
@@ -250,14 +251,16 @@ class Game extends hxd.App {
 			generateWinningText();
 
 			s2d.addEventListener(function (event:hxd.Event) {
-				if (event.kind == EKeyDown && event.keyCode == hxd.Key.ESCAPE) {
+				if (event.kind == EKeyDown && Controls.back.contains(event.keyCode)) {
 					backToMain();
 				}
 			});
 
 			return;
 		}
-		if (hxd.Key.isDown(hxd.Key.MOUSE_LEFT) || hxd.Key.isDown(hxd.Key.SPACE)) {
+
+		keyboardMovement();
+		if (Controls.isDown(Controls.fireLasers)) {
 			cat.add(catEyes);
 			catEyes.x = catFace.x;
 			catEyes.y = catFace.y;
@@ -271,7 +274,6 @@ class Game extends hxd.App {
 				}
 			}
 		}
-		keyboardMovement();
 
 		if (miceArray.length < MouseNumbers.maxCount && Utils.randomChance(MouseNumbers.breedChance)) {
 			var lastMouse:Mouse = miceArray.pop();
@@ -313,16 +315,16 @@ class Game extends hxd.App {
 	function keyboardMovement() {
 		var x = 0;
 		var y = 0;
-		if (hxd.Key.isDown(hxd.Key.RIGHT)) {
+		if (Controls.isDown(Controls.moveRight)) {
 			x += MiscInts.catMove;
 		}
-		if (hxd.Key.isDown(hxd.Key.LEFT)) {
+		if (Controls.isDown(Controls.moveLeft)) {
 			x -= MiscInts.catMove;
 		}
-		if (hxd.Key.isDown(hxd.Key.DOWN)) {
+		if (Controls.isDown(Controls.moveDown)) {
 			y += MiscInts.catMove;
 		}
-		if (hxd.Key.isDown(hxd.Key.UP)) {
+		if (Controls.isDown(Controls.moveUp)) {
 			y -= MiscInts.catMove;
 		}
 
