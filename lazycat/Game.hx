@@ -1,13 +1,13 @@
 package lazycat;
 
 import lazycat.Constants.BigFontNumbers;
+import lazycat.Constants.Controls;
 import lazycat.Constants.ImageSizes;
 import lazycat.Constants.MiscFloats;
 import lazycat.Constants.MiscInts;
 import lazycat.Constants.MiscStrings;
 import lazycat.Constants.SmallFontNumbers;
 import lazycat.Constants.TextStrings;
-import lazycat.Constants.Controls;
 
 enum abstract LaserNumbers(Int) from Int to Int {
 	var eyePulseMin = 8;
