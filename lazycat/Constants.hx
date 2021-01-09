@@ -58,7 +58,7 @@ enum abstract MiscInts(Int) from Int to Int {
 
 class Controls {
 	public static var fireLasers:haxe.ds.ReadOnlyArray<Int> = [hxd.Key.MOUSE_LEFT, hxd.Key.SPACE];
-	public static var menuSelect:haxe.ds.ReadOnlyArray<Int> = [hxd.Key.SPACE];
+	public static var menuSelect:haxe.ds.ReadOnlyArray<Int> = [hxd.Key.SPACE, hxd.Key.ENTER];
 	public static var moveUp:haxe.ds.ReadOnlyArray<Int> = [hxd.Key.UP];
 	public static var moveDown:haxe.ds.ReadOnlyArray<Int> = [hxd.Key.DOWN];
 	public static var moveLeft:haxe.ds.ReadOnlyArray<Int> = [hxd.Key.LEFT];

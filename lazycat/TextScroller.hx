@@ -1,6 +1,7 @@
 package lazycat;
 
 import lazycat.Constants.BigFontNumbers;
+import lazycat.Constants.Controls;
 import lazycat.Constants.ImageSizes;
 import lazycat.Constants.SmallFontNumbers;
 import lazycat.Constants.TextStrings;
@@ -83,6 +84,17 @@ class TextScroller extends hxd.App {
 			case EWheel:
 				scrollText.y += (event.wheelDelta * TextScrollerNumbers.scrollMultiplier);
 				limitScrollY();
+			case EKeyDown:
+				if (Controls.moveUp.contains(event.keyCode)) {
+					scrollText.y += SmallFontNumbers.size;
+				}
+				else if (Controls.moveDown.contains(event.keyCode)) {
+					scrollText.y -= SmallFontNumbers.size;
+				}
+				else if (Controls.back.contains(event.keyCode)) {
+					goBack();
+				}
+				limitScrollY();
 			case EPush:
 				if (event.relY > topMargin && event.relY < (ImageSizes.screenHeight - bottomMargin)) {
 					dragScrollingLastPosition = event.relY;
@@ -129,10 +141,7 @@ class TextScroller extends hxd.App {
 			titleText.textColor = BigFontNumbers.colour;
 			titleText.dropShadow.color = BigFontNumbers.dropShadowColour;
 		}
-		titleInteraction.onClick = function(event:hxd.Event) {
-			hxd.System.setNativeCursor(hxd.Cursor.Default);
-			new Main(assets);
-		}
+		titleInteraction.onClick = goBack;
 
 		var titleBackground = new h2d.Bitmap(h2d.Tile.fromColor(0, ImageSizes.screenWidth, Math.ceil(titleText.textHeight), 1));
 		s2d.addChild(titleBackground);
@@ -155,13 +164,15 @@ class TextScroller extends hxd.App {
 		backInteraction.onOut = function(event:hxd.Event) {
 			backText.textColor = SmallFontNumbers.colour;
 		}
-		backInteraction.onClick = function(event:hxd.Event) {
-			hxd.System.setNativeCursor(hxd.Cursor.Default);
-			new Main(assets);
-		}
+		backInteraction.onClick = goBack;
 
 		var backBackground = new h2d.Bitmap(h2d.Tile.fromColor(0, ImageSizes.screenWidth, Math.ceil(backText.textHeight), 1));
 		s2d.addChild(backBackground);
 		backBackground.y = backText.y;
+	}
+
+	function goBack(?event:hxd.Event) {
+		hxd.System.setNativeCursor(hxd.Cursor.Default);
+		new Main(assets);
 	}
 }
