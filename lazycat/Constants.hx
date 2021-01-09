@@ -57,16 +57,17 @@ enum abstract MiscInts(Int) from Int to Int {
 }
 
 class Controls {
-	public static var fireLasers:haxe.ds.ReadOnlyArray<Int> = [hxd.Key.MOUSE_LEFT, hxd.Key.SPACE];
-	public static var menuSelect:haxe.ds.ReadOnlyArray<Int> = [hxd.Key.SPACE, hxd.Key.ENTER];
-	public static var moveUp:haxe.ds.ReadOnlyArray<Int> = [hxd.Key.UP];
-	public static var moveDown:haxe.ds.ReadOnlyArray<Int> = [hxd.Key.DOWN];
-	public static var moveLeft:haxe.ds.ReadOnlyArray<Int> = [hxd.Key.LEFT];
-	public static var moveRight:haxe.ds.ReadOnlyArray<Int> = [hxd.Key.RIGHT];
-	public static var back:haxe.ds.ReadOnlyArray<Int> = [hxd.Key.ESCAPE];
-	public static var pause:haxe.ds.ReadOnlyArray<Int> = [hxd.Key.ESCAPE, hxd.Key.P];
 
-	public static function isDown(keys:Iterable<Int>) {
+	public static final FIRELASERS:haxe.ds.ReadOnlyArray<Int> = [hxd.Key.MOUSE_LEFT, hxd.Key.SPACE];
+	public static final MENUSELECT:haxe.ds.ReadOnlyArray<Int> = [hxd.Key.SPACE, hxd.Key.ENTER];
+	public static final MOVEUP:haxe.ds.ReadOnlyArray<Int> = [hxd.Key.UP];
+	public static final MOVEDOWN:haxe.ds.ReadOnlyArray<Int> = [hxd.Key.DOWN];
+	public static final MOVELEFT:haxe.ds.ReadOnlyArray<Int> = [hxd.Key.LEFT];
+	public static final MOVERIGHT:haxe.ds.ReadOnlyArray<Int> = [hxd.Key.RIGHT];
+	public static final BACK:haxe.ds.ReadOnlyArray<Int> = [hxd.Key.ESCAPE];
+	public static final PAUSE:haxe.ds.ReadOnlyArray<Int> = [hxd.Key.ESCAPE, hxd.Key.P];
+
+	public static function isDown(keys:Iterable<Int>):Bool {
 		for (key in keys) {
 			if (inline hxd.Key.isDown(key)) {
 				return true;

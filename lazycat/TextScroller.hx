@@ -85,14 +85,15 @@ class TextScroller extends hxd.App {
 				scrollText.y += (event.wheelDelta * TextScrollerNumbers.scrollMultiplier);
 				limitScrollY();
 			case EKeyDown:
-				if (Controls.moveUp.contains(event.keyCode)) {
+				if (Controls.BACK.contains(event.keyCode)) {
+					goBack();
+					return;
+				}
+				if (Controls.MOVEUP.contains(event.keyCode)) {
 					scrollText.y += SmallFontNumbers.size;
 				}
-				else if (Controls.moveDown.contains(event.keyCode)) {
+				else if (Controls.MOVEDOWN.contains(event.keyCode)) {
 					scrollText.y -= SmallFontNumbers.size;
-				}
-				else if (Controls.back.contains(event.keyCode)) {
-					goBack();
 				}
 				limitScrollY();
 			case EPush:
@@ -100,11 +101,7 @@ class TextScroller extends hxd.App {
 					dragScrollingLastPosition = event.relY;
 					s2d.startDrag(dragScroll);
 				}
-				else {
-					return;
-				}
 			default:
-				return;
 		}
 	}
 

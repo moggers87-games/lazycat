@@ -154,7 +154,7 @@ class Game extends hxd.App {
 			case EFocusLost:
 				paused = true;
 			case EKeyDown:
-				if (Controls.pause.contains(event.keyCode)) {
+				if (Controls.PAUSE.contains(event.keyCode)) {
 					paused = !paused;
 				}
 				else {
@@ -251,7 +251,7 @@ class Game extends hxd.App {
 			generateWinningText();
 
 			s2d.addEventListener(function (event:hxd.Event) {
-				if (event.kind == EKeyDown && Controls.back.contains(event.keyCode)) {
+				if (event.kind == EKeyDown && Controls.BACK.contains(event.keyCode)) {
 					backToMain();
 				}
 			});
@@ -260,7 +260,7 @@ class Game extends hxd.App {
 		}
 
 		keyboardMovement();
-		if (Controls.isDown(Controls.fireLasers)) {
+		if (Controls.isDown(Controls.FIRELASERS)) {
 			cat.add(catEyes);
 			catEyes.x = catFace.x;
 			catEyes.y = catFace.y;
@@ -315,16 +315,16 @@ class Game extends hxd.App {
 	function keyboardMovement() {
 		var x = 0;
 		var y = 0;
-		if (Controls.isDown(Controls.moveRight)) {
+		if (Controls.isDown(Controls.MOVERIGHT)) {
 			x += MiscInts.catMove;
 		}
-		if (Controls.isDown(Controls.moveLeft)) {
+		if (Controls.isDown(Controls.MOVELEFT)) {
 			x -= MiscInts.catMove;
 		}
-		if (Controls.isDown(Controls.moveDown)) {
+		if (Controls.isDown(Controls.MOVEDOWN)) {
 			y += MiscInts.catMove;
 		}
-		if (Controls.isDown(Controls.moveUp)) {
+		if (Controls.isDown(Controls.MOVEUP)) {
 			y -= MiscInts.catMove;
 		}
 
