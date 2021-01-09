@@ -9,6 +9,11 @@
             margin: 0;
             padding: 0;
             background-color: black;
+            min-height: 100%;
+            height: 100%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
         }
         #webgl {
             width: 100% !important;
@@ -17,22 +22,26 @@
         #wrapper {
             width: 128vh;
             height: 96vh;
-            margin: auto;
-            overflow: hidden;
-            position: absolute;
-            bottom: 0;
-            left: 0;
-            right: 0;
-            top: 0;
             border: 1vh solid white;
         }
         @media (max-aspect-ratio: 4/3) {
             #wrapper {
                 width: 96vw;
                 height: 72vw;
+                border: 1vw solid white;
             }
         }
     </style>
+    <script>
+        window.addEventListener("resize", () => {
+            let height = window.innerHeight;
+            document.querySelector("html").style.height = height;
+            document.querySelector("body").style.height = height;
+        });
+        window.document.addEventListener("DOMContentLoaded", () => {
+            window.dispatchEvent(new Event("resize"));
+        });
+    </script>
 </head>
 <body>
     <div id="wrapper">

@@ -1,6 +1,7 @@
 package lazycat;
 
 import lazycat.Constants.BigFontNumbers;
+import lazycat.Constants.Controls;
 import lazycat.Constants.ImageSizes;
 import lazycat.Constants.MiscFloats;
 import lazycat.Constants.MiscInts;
@@ -92,6 +93,8 @@ class Game extends hxd.App {
 		cat.add(catFace);
 		catEyes = new Cat(assets.eyesTile());
 		s2d.addChild(cat);
+		catFace.x = ImageSizes.screenWidth / 2;
+		catFace.y = ImageSizes.screenHeight / 2;
 
 		mice = new h2d.SpriteBatch(assets.sprites);
 		mice.hasUpdate = true;
@@ -136,6 +139,7 @@ class Game extends hxd.App {
 			return;
 		}
 		if (event.kind == EMove) {
+			event.propagate = false;
 			catFace.x = event.relX - catFace.scaledWidth / 2;
 			catFace.y = event.relY - catFace.scaledHeight / 2;
 		}
@@ -150,7 +154,7 @@ class Game extends hxd.App {
 			case EFocusLost:
 				paused = true;
 			case EKeyDown:
-				if (event.keyCode == hxd.Key.P) {
+				if (Controls.PAUSE.contains(event.keyCode)) {
 					paused = !paused;
 				}
 				else {
@@ -166,6 +170,9 @@ class Game extends hxd.App {
 
 		if (!paused) {
 			hxd.System.setNativeCursor(hxd.Cursor.Hide);
+		}
+		else {
+			hxd.System.setNativeCursor(hxd.Cursor.Default);
 		}
 
 		for (el in mice.getElements()) {
@@ -213,9 +220,7 @@ class Game extends hxd.App {
 			backText.textColor = SmallFontNumbers.colour;
 		}
 		backInteraction.onClick = function(event:hxd.Event) {
-			hxd.System.setNativeCursor(hxd.Cursor.Default);
-			assets.music.pause = true;
-			new Main(assets);
+			backToMain();
 		}
 
 		s2d.addChild(backText);
@@ -225,7 +230,6 @@ class Game extends hxd.App {
 
 	override function update(dt:Float) {
 		if (paused || winner) {
-			hxd.System.setNativeCursor(hxd.Cursor.Default);
 			return;
 		}
 
@@ -236,6 +240,7 @@ class Game extends hxd.App {
 		if (miceArray.length == 0 ) {
 			hxd.System.setNativeCursor(hxd.Cursor.Default);
 			winner = true;
+			assets.music.pause = true;
 			s2d.addChild(pausedOverlay);
 			s2d.over(timerText);
 			s2d.over(highScoreText);
@@ -245,9 +250,17 @@ class Game extends hxd.App {
 			}
 			generateWinningText();
 
+			s2d.addEventListener(function (event:hxd.Event) {
+				if (event.kind == EKeyDown && Controls.BACK.contains(event.keyCode)) {
+					backToMain();
+				}
+			});
+
 			return;
 		}
-		if (hxd.Key.isDown(hxd.Key.MOUSE_LEFT)) {
+
+		keyboardMovement();
+		if (Controls.isDown(Controls.FIRELASERS)) {
 			cat.add(catEyes);
 			catEyes.x = catFace.x;
 			catEyes.y = catFace.y;
@@ -297,6 +310,36 @@ class Game extends hxd.App {
 		laser.endFill();
 
 		mouse.hit();
+	}
+
+	function keyboardMovement() {
+		var x = 0;
+		var y = 0;
+		if (Controls.isDown(Controls.MOVERIGHT)) {
+			x += MiscInts.catMove;
+		}
+		if (Controls.isDown(Controls.MOVELEFT)) {
+			x -= MiscInts.catMove;
+		}
+		if (Controls.isDown(Controls.MOVEDOWN)) {
+			y += MiscInts.catMove;
+		}
+		if (Controls.isDown(Controls.MOVEUP)) {
+			y -= MiscInts.catMove;
+		}
+
+		if (x != 0 && y != 0) {
+			x = Math.floor(x / 2);
+			y = Math.floor(y / 2);
+		}
+
+		catFace.x += x;
+		catFace.y += y;
+	}
+
+	inline function backToMain() {
+		hxd.System.setNativeCursor(hxd.Cursor.Default);
+		new Main(assets);
 	}
 
 	inline function printScore() {

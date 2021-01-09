@@ -1,6 +1,7 @@
 package lazycat;
 
 import lazycat.Constants.BigFontNumbers;
+import lazycat.Constants.Controls;
 import lazycat.Constants.ImageSizes;
 import lazycat.Constants.SmallFontNumbers;
 import lazycat.Constants.TextStrings;
@@ -8,11 +9,15 @@ import lazycat.Constants.TextStrings;
 class Main extends hxd.App {
 
 	var assets:Assets;
+	var menuItems:Array<h2d.Interactive>;
+	var menuIdx:Int;
 	var titleText:h2d.Text;
 
 	public function new(assets:Assets) {
 		super();
 		this.assets = assets;
+		menuItems = [];
+		menuIdx = -1;
 	}
 
 	override function init() {
@@ -65,6 +70,40 @@ class Main extends hxd.App {
 		versionText.textColor = SmallFontNumbers.colour;
 		s2d.addChild(versionText);
 		versionText.y = ImageSizes.screenHeight - versionText.textHeight;
+
+		s2d.addEventListener(keyboardControl);
+	}
+
+	function keyboardControl(event:hxd.Event) {
+		if (event.kind != EKeyDown) {
+			return;
+		}
+		var newIndex:Int = menuIdx;
+		var menuItem:h2d.Interactive = menuItems[menuIdx];
+		if (Controls.MOVEUP.contains(event.keyCode)) {
+			newIndex -= 1;
+		}
+		else if (Controls.MOVEDOWN.contains(event.keyCode)) {
+			newIndex += 1;
+		}
+		else if (Controls.MENUSELECT.contains(event.keyCode) && menuItem != null) {
+			menuItem.onClick(event);
+		}
+		else {
+			return;
+		}
+		if (newIndex < 0) {
+			newIndex = 0;
+		}
+		else if (newIndex >= menuItems.length) {
+			newIndex = menuItems.length - 1;
+		}
+		var oldItem:h2d.Interactive = menuItems[menuIdx];
+		if (oldItem != null) {
+			oldItem.onOut(new hxd.Event(EOut));
+		}
+		menuIdx = newIndex;
+		menuItems[menuIdx].onOver(new hxd.Event(EOver));
 	}
 
 	function addMenuItem(text, yPosition, callback):h2d.Text {
@@ -78,7 +117,9 @@ class Main extends hxd.App {
 		var interaction = new h2d.Interactive(titleText.textWidth,
 												textObj.textHeight,
 												textObj);
+		menuItems.push(interaction);
 		interaction.onOver = function(event:hxd.Event) {
+			menuIdx = menuItems.indexOf(interaction);
 			textObj.textColor = SmallFontNumbers.selectColour;
 		}
 		interaction.onOut = function(event:hxd.Event) {

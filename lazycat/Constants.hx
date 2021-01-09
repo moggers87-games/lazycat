@@ -48,9 +48,32 @@ enum abstract MiscStrings(String) from String to String {
 
 enum abstract MiscInts(Int) from Int to Int {
 	var defaultHighScore = 1000;
+	var catMove = 3;
 
 	@:op(A > B) static function gt(lhs:MiscInts, rhs:MiscInts):Bool;
 	@:op(A >= B) static function gte(lhs:MiscInts, rhs:MiscInts):Bool;
 	@:op(A < B) static function lt(lhs:MiscInts, rhs:MiscInts):Bool;
 	@:op(A <= B) static function lte(lhs:MiscInts, rhs:MiscInts):Bool;
+}
+
+class Controls {
+
+	public static final FIRELASERS:haxe.ds.ReadOnlyArray<Int> = [hxd.Key.MOUSE_LEFT, hxd.Key.SPACE];
+	public static final MENUSELECT:haxe.ds.ReadOnlyArray<Int> = [hxd.Key.SPACE, hxd.Key.ENTER];
+	public static final MOVEUP:haxe.ds.ReadOnlyArray<Int> = [hxd.Key.UP];
+	public static final MOVEDOWN:haxe.ds.ReadOnlyArray<Int> = [hxd.Key.DOWN];
+	public static final MOVELEFT:haxe.ds.ReadOnlyArray<Int> = [hxd.Key.LEFT];
+	public static final MOVERIGHT:haxe.ds.ReadOnlyArray<Int> = [hxd.Key.RIGHT];
+	public static final BACK:haxe.ds.ReadOnlyArray<Int> = [hxd.Key.ESCAPE];
+	public static final PAUSE:haxe.ds.ReadOnlyArray<Int> = [hxd.Key.ESCAPE, hxd.Key.P];
+
+	public static function isDown(keys:Iterable<Int>):Bool {
+		for (key in keys) {
+			if (inline hxd.Key.isDown(key)) {
+				return true;
+			}
+		}
+		return false;
+	}
+
 }

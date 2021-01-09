@@ -8,6 +8,8 @@ Controls
 
 Use your mouse to control LazyCatat. Hold the left mouse button to fire their lasers at the LaserMice. Remember: LazyCat has a limit effective range! They won't fire their laser if there are no LaserMice nearby.
 
+Keyboard controls are also available. If you're reading this, you've worked them out already.
+
 If you're on a touch device, just use your fingers!
 
 LaserMice Behaviour
