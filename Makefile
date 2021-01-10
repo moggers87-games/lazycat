@@ -1,8 +1,15 @@
 source := $(shell find lazycat -type f) .installed-deps-haxe
-version := $(shell git describe --long --dirty)
+version := $(shell cat .version || git describe --long --dirty)
 
 .PHONY: all
 all: export/js
+
+.PHONY: release
+release: all export/source
+
+.PHONY: clean
+clean:
+	rm -rf export
 
 .PHONY: lint
 lint: .haxelib
@@ -26,6 +33,14 @@ export/js/index.html: lazycat/data/index.html
 export/js: export/js/lazycat.js export/js/index.html
 	rm -f $@/*.zip
 	zip -j $@/lazycat-$(version).zip $@/*
+	date -Iseconds
+
+export/source: $(source)
+	rm -f $@/*.zip
+	mkdir -p $@
+	echo $(version) > .version
+	git archive --output=export/source/lazycat-source-$(version).zip --prefix=lazycat/ --format=zip --add-file=.version HEAD
+	rm .version
 	date -Iseconds
 
 .PHONY: test-js

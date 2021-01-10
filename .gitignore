@@ -3,3 +3,4 @@
 /.haxelib
 /.installed-deps-*
 /node_modules
+/.version
