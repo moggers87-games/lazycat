@@ -310,7 +310,6 @@ class Game extends hxd.App {
 		laser.lineTo(mouseCentre[0], mouseCentre[1]);
 		laser.endFill();
 
-
 		mouse.hit();
 	}
 
