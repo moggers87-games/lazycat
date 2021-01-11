@@ -33,6 +33,7 @@ export/js/index.html: lazycat/data/index.html
 export/js: export/js/lazycat.js export/js/index.html
 	rm -f $@/*.zip
 	zip -j $@/lazycat-$(version).zip $@/*
+	cp $@/lazycat-$(version).zip $@/lazycat-game.zip
 	date -Iseconds
 
 export/source: $(source)
