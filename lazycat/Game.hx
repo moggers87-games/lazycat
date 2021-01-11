@@ -14,7 +14,8 @@ enum abstract LaserNumbers(Int) from Int to Int {
 	var eyePulseMax = 15;
 	var eyeOffsetX = 40;
 	var eyeOffsetY = 15;
-	var colour = 0xFF33CC;
+	var colour = 0xFF0000;
+	var pulseColour = 0xFF33CC;
 	var width = 10;
 	var squareOfMaxLaserDistance = 40000;
 	var damage = 5;
@@ -293,6 +294,13 @@ class Game extends hxd.App {
 		var leftEyeX:Float = catCentre[0] - LaserNumbers.eyeOffsetX;
 		var leftEyeY:Float = rightEyeY;
 
+		var eyePulse:Int = Utils.randomInt(LaserNumbers.eyePulseMin, LaserNumbers.eyePulseMax);
+		laser.beginFill(LaserNumbers.pulseColour, 1);
+		laser.lineStyle(0, 0, 0);
+		laser.drawCircle(rightEyeX, rightEyeY, eyePulse);
+		laser.drawCircle(leftEyeX, leftEyeY, eyePulse);
+		laser.drawCircle(mouseCentre[0], mouseCentre[1], Utils.randomInt(LaserNumbers.eyePulseMin, LaserNumbers.eyePulseMax));
+
 		laser.beginFill(0, 0);
 		laser.lineStyle(LaserNumbers.width, LaserNumbers.colour);
 
@@ -300,14 +308,8 @@ class Game extends hxd.App {
 		laser.lineTo(mouseCentre[0], mouseCentre[1]);
 		laser.moveTo(leftEyeX, leftEyeY);
 		laser.lineTo(mouseCentre[0], mouseCentre[1]);
-
-		var eyePulse:Int = Utils.randomInt(LaserNumbers.eyePulseMin, LaserNumbers.eyePulseMax);
-		laser.beginFill(LaserNumbers.colour, 1);
-		laser.lineStyle(0, 0, 0);
-		laser.drawCircle(rightEyeX, rightEyeY, eyePulse);
-		laser.drawCircle(leftEyeX, leftEyeY, eyePulse);
-		laser.drawCircle(mouseCentre[0], mouseCentre[1], Utils.randomInt(LaserNumbers.eyePulseMin, LaserNumbers.eyePulseMax));
 		laser.endFill();
+
 
 		mouse.hit();
 	}
