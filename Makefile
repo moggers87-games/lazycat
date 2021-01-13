@@ -24,7 +24,7 @@ lint: .haxelib
 	touch $@
 
 export/js/lazycat.js: $(source)
-	haxe compile.hxml --js $@
+	haxe js.hxml
 
 export/js/index.html: lazycat/data/index.html
 	mkdir -p $(@D)
