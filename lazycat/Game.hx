@@ -63,6 +63,7 @@ class Game extends hxd.App {
 	var timerText:h2d.Text;
 	var highScore:Int;
 	var highScoreText:h2d.Text;
+	var savePath:String;
 
 	var paused:Bool;
 	var winner:Bool;
@@ -70,9 +71,14 @@ class Game extends hxd.App {
 	public function new(assets:Assets) {
 		super();
 		this.assets = assets;
+		savePath = MiscStrings.savePath;
+
+		#if sys
+		savePath = StringTools.replace(savePath, "/", "-");
+		#end
 
 		timer = 0;
-		highScore = hxd.Save.load(MiscInts.defaultHighScore, MiscStrings.savePath);
+		highScore = hxd.Save.load(MiscInts.defaultHighScore, savePath);
 
 		paused = false;
 		winner = false;
@@ -247,7 +253,7 @@ class Game extends hxd.App {
 			s2d.over(highScoreText);
 
 			if (timer < highScore) {
-				hxd.Save.save(timer, MiscStrings.savePath);
+				hxd.Save.save(timer, savePath);
 			}
 			generateWinningText();
 

@@ -1,8 +1,8 @@
-source := $(shell find lazycat -type f) .installed-deps-haxe
+source := $(shell find lazycat -type f)
 version := $(shell cat .version || git describe --long --dirty)
 
 .PHONY: all
-all: export/js
+all: export/js export/hashlink
 
 .PHONY: release
 release: all export/source
@@ -19,11 +19,26 @@ lint: .haxelib
 .haxelib:
 	haxelib newrepo
 
-.installed-deps-haxe: compile.hxml .haxelib
-	haxelib install compile.hxml --always
+.installed-deps-haxe-js: js.hxml compile.hxml .haxelib
+	haxelib install js.hxml --always
 	touch $@
 
-export/js/lazycat.js: $(source)
+.installed-deps-haxe-hashlink: hashlink.hxml compile.hxml .haxelib
+	haxelib install hashlink.hxml --always
+	touch $@
+
+export/hashlink/lazycat.hl: $(source) .installed-deps-haxe-hashlink
+	mkdir -p $(@D)
+	haxe hashlink.hxml
+
+export/hashlink: export/hashlink/lazycat.hl
+	cp /usr/local/lib/fmt.hdll $@
+	cp /usr/local/lib/openal.hdll $@
+	cp /usr/local/lib/sdl.hdll $@
+	cp /usr/local/lib/ui.hdll $@
+
+export/js/lazycat.js: $(source) .installed-deps-haxe-js
+	mkdir -p $(@D)
 	haxe js.hxml
 
 export/js/index.html: lazycat/data/index.html
@@ -47,3 +62,7 @@ export/source: $(source)
 .PHONY: test-js
 test-js: export/js
 	python -m http.server --directory export/js
+
+.PHONY: test-hl
+test-hl: export/hashlink
+	cd export/hashlink; hl lazycat.hl

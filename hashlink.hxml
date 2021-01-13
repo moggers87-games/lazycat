@@ -1,0 +1,3 @@
+compile.hxml
+--library hlsdl:1.10.0
+--hl export/hashlink/lazycat.hl

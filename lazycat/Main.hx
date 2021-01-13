@@ -18,6 +18,9 @@ class Main extends hxd.App {
 		this.assets = assets;
 		menuItems = [];
 		menuIdx = -1;
+
+		var window:hxd.Window = hxd.Window.getInstance();
+		window.title = TextStrings.title;
 	}
 
 	override function init() {
