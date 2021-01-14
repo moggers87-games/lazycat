@@ -56,4 +56,23 @@ class Assets {
 			music.pause = false;
 		}
 	}
+
+	public function dispose() {
+		if (music != null) {
+			music.stop();
+			music = null;
+		}
+		if (sprites != null) {
+			sprites.dispose();
+			sprites = null;
+		}
+		if (bigFont != null) {
+			bigFont.dispose();
+			bigFont = null;
+		}
+		if (smallFont != null) {
+			smallFont.dispose();
+			smallFont = null;
+		}
+	}
 }
