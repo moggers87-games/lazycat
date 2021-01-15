@@ -2,7 +2,7 @@ source := $(shell find lazycat -type f)
 version := $(shell cat .version || git describe --long --dirty)
 
 .PHONY: all
-all: export/js export/hashlink
+all: export/js export/hl export/native
 
 .PHONY: release
 release: all export/source
@@ -23,19 +23,32 @@ lint: .haxelib
 	haxelib install js.hxml --always
 	touch $@
 
-.installed-deps-haxe-hashlink: hashlink.hxml compile.hxml .haxelib
-	haxelib install hashlink.hxml --always
+.installed-deps-haxe-hl: hl.hxml hashlink.hxml compile.hxml .haxelib
+	haxelib install hl.hxml --always
 	touch $@
 
-export/hashlink/lazycat.hl: $(source) .installed-deps-haxe-hashlink
-	mkdir -p $(@D)
-	haxe hashlink.hxml
+.installed-deps-haxe-native: native.hxml hashlink.hxml compile.hxml .haxelib
+	haxelib install native.hxml --always
+	touch $@
 
-export/hashlink: export/hashlink/lazycat.hl
+export/hl/lazycat.hl: $(source) .installed-deps-haxe-hl
+	mkdir -p $(@D)
+	haxe hl.hxml
+
+export/hl: export/hl/lazycat.hl
 	cp /usr/local/lib/fmt.hdll $@
 	cp /usr/local/lib/openal.hdll $@
 	cp /usr/local/lib/sdl.hdll $@
 	cp /usr/local/lib/ui.hdll $@
+
+export/native/src/lazycat.c: $(source) .installed-deps-haxe-native
+	mkdir -p $(@D)
+	haxe native.hxml
+
+export/native/lazycat: export/native/src/lazycat.c
+	gcc -O3 -o $@ -std=c++03 -I$(@D)/src $(@D)/src/lazycat.c /usr/local/lib/sdl.hdll /usr/local/lib/ui.hdll /usr/local/lib/fmt.hdll /usr/local/lib/openal.hdll /usr/local/lib/ui.hdll -lhl -lSDL2 -lm -lopenal -lGL
+
+export/native: export/native/lazycat
 
 export/js/lazycat.js: $(source) .installed-deps-haxe-js
 	mkdir -p $(@D)
@@ -64,5 +77,9 @@ test-js: export/js
 	python -m http.server --directory export/js
 
 .PHONY: test-hl
-test-hl: export/hashlink
-	cd export/hashlink; hl lazycat.hl
+test-hl: export/hl
+	cd export/hl; hl lazycat.hl
+
+.PHONY: test-native
+test-native: export/native
+	cd export/native; ./lazycat
