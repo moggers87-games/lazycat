@@ -53,7 +53,10 @@ jobs:
       - name: Build
         run: make export/hl
   build-native:
-    runs-on: ubuntu-latest
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        os: [ubuntu-latest, macos-latest]
     steps:
       - uses: actions/checkout@v2
         with:
@@ -61,8 +64,12 @@ jobs:
       - uses: krdlab/setup-haxe@v1
         with:
           haxe-version: "4.1.4"
-      - name: Install dependencies
+      - name: Install Linux dependencies
+        if: matrix.os == 'ubuntu-latest'
         run: sudo apt-get install libpng-dev libturbojpeg-dev libvorbis-dev libopenal-dev libsdl2-dev libmbedtls-dev libuv1-dev
+      - name: Install Mac dependencies
+        if: matrix.os == 'macos-latest'
+        run: brew install cmake jpeg-turbo libpng sdl2 libogg libvorbis openal-soft mbedtls libuv openssl
       - name: Build hashlink
         run: |
           wget https://github.com/HaxeFoundation/hashlink/archive/1.11.tar.gz
