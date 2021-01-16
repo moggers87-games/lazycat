@@ -1,0 +1,3 @@
+hashlink.hxml
+--library hashlink:0.1.0
+--hl export/native/src/lazycat.c

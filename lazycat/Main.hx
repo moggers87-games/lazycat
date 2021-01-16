@@ -18,11 +18,14 @@ class Main extends hxd.App {
 		this.assets = assets;
 		menuItems = [];
 		menuIdx = -1;
+
+		var window:hxd.Window = hxd.Window.getInstance();
+		window.title = TextStrings.title;
 	}
 
 	override function init() {
 		s2d.scaleMode = h2d.Scene.ScaleMode.LetterBox(ImageSizes.screenWidth, ImageSizes.screenHeight);
-
+		s2d.addEventListener(keyboardControl);
 		assets.initFonts();
 
 		titleText = new h2d.Text(assets.bigFont);
@@ -34,45 +37,45 @@ class Main extends hxd.App {
 			color: BigFontNumbers.dropShadowColour,
 			alpha: 1
 		};
-
 		s2d.addChild(titleText);
 		titleText.x = ImageSizes.screenWidth / 2 - titleText.textWidth / 2;
 		titleText.y = ImageSizes.screenHeight / 2 - titleText.textHeight / 2;
 
-		var startText:h2d.Text = addMenuItem(
-			TextStrings.start,
-			titleText.y + titleText.textHeight,
-			function(event:hxd.Event) {
-				new Game(assets);
-			}
-		);
-
-		var instructionsText:h2d.Text = addMenuItem(
-			TextStrings.instructions,
-			startText.y + startText.textHeight,
-			function(event:hxd.Event) {
-				hxd.System.setNativeCursor(hxd.Cursor.Default);
-				new TextScroller(assets, TextStrings.instructions, hxd.Res.instructions.entry.getText());
-			}
-		);
-
-		addMenuItem(
-			TextStrings.credits,
-			instructionsText.y + instructionsText.textHeight,
-			function(event:hxd.Event) {
-				hxd.System.setNativeCursor(hxd.Cursor.Default);
-				new TextScroller(assets, TextStrings.credits, hxd.Res.credits.entry.getText());
-			}
-		);
+		var startText:h2d.Text = addMenuItem(TextStrings.start, titleText.y + titleText.textHeight, startHandler);
+		var instructionsText:h2d.Text = addMenuItem(TextStrings.instructions, startText.y + startText.textHeight, instructionsHandler);
+		var creditsText:h2d.Text = addMenuItem(TextStrings.credits, instructionsText.y + instructionsText.textHeight, creditsHandler);
+		#if sys
+		addMenuItem(TextStrings.quit, creditsText.y + creditsText.textHeight, quitHandler);
+		#end
 
 		var versionText = new h2d.Text(assets.smallFont);
 		versionText.text = TextStrings.version;
 		versionText.textColor = SmallFontNumbers.colour;
 		s2d.addChild(versionText);
 		versionText.y = ImageSizes.screenHeight - versionText.textHeight;
-
-		s2d.addEventListener(keyboardControl);
 	}
+
+	function startHandler(event:hxd.Event) {
+		new Game(assets);
+	}
+
+	function instructionsHandler(event:hxd.Event) {
+		hxd.System.setNativeCursor(hxd.Cursor.Default);
+		new TextScroller(assets, TextStrings.instructions, hxd.Res.instructions.entry.getText());
+	}
+
+	function creditsHandler(event:hxd.Event) {
+		hxd.System.setNativeCursor(hxd.Cursor.Default);
+		new TextScroller(assets, TextStrings.credits, hxd.Res.credits.entry.getText());
+	}
+
+	#if sys
+	function quitHandler(event:hxd.Event) {
+		hxd.System.setNativeCursor(hxd.Cursor.Default);
+		assets.dispose();
+		Sys.exit(0);
+	}
+	#end
 
 	function keyboardControl(event:hxd.Event) {
 		if (event.kind != EKeyDown) {
