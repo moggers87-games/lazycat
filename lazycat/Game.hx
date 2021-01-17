@@ -29,7 +29,7 @@ enum abstract LaserNumbers(Int) from Int to Int {
 enum abstract MouseNumbers(Int) from Int to Int {
 	var initialCount = 4;
 	var maxCount = 230;
-	var breedChance = 50;
+	var reproduceFrame = 50;
 	var directionChance = 50;
 	var distanceMin = 1;
 	var distanceMax = 10;
@@ -282,7 +282,7 @@ class Game extends hxd.App {
 			}
 		}
 
-		if (miceArray.length < MouseNumbers.maxCount && Utils.randomChance(MouseNumbers.breedChance)) {
+		if (miceArray.length < MouseNumbers.maxCount && hxd.Timer.frameCount % MouseNumbers.reproduceFrame == 0) {
 			var lastMouse:Mouse = miceArray.pop();
 			var mouse = new Mouse(assets.mouseTile());
 			mice.add(mouse);
