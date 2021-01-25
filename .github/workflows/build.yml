@@ -42,7 +42,9 @@ jobs:
         with:
           haxe-version: "4.1.4"
       - name: Install dependencies
-        run: sudo apt-get install libpng-dev libturbojpeg-dev libvorbis-dev libopenal-dev libsdl2-dev libmbedtls-dev libuv1-dev
+        run: |
+          sudo apt-get update
+          sudo apt-get install libpng-dev libturbojpeg-dev libvorbis-dev libopenal-dev libsdl2-dev libmbedtls-dev libuv1-dev
       - name: Build hashlink
         run: |
           wget https://github.com/HaxeFoundation/hashlink/archive/1.11.tar.gz
@@ -66,7 +68,9 @@ jobs:
           haxe-version: "4.1.4"
       - name: Install Linux dependencies
         if: matrix.os == 'ubuntu-latest'
-        run: sudo apt-get install libpng-dev libturbojpeg-dev libvorbis-dev libopenal-dev libsdl2-dev libmbedtls-dev libuv1-dev
+        run: |
+          sudo apt-get update
+          sudo apt-get install libpng-dev libturbojpeg-dev libvorbis-dev libopenal-dev libsdl2-dev libmbedtls-dev libuv1-dev
       - name: Install Mac dependencies
         if: matrix.os == 'macos-latest'
         run: brew install cmake jpeg-turbo libpng sdl2 libogg libvorbis openal-soft mbedtls libuv openssl
