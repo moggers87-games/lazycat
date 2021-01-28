@@ -4,6 +4,7 @@ import lazycat.Constants.BigFontNumbers;
 import lazycat.Constants.ImageSizes;
 import lazycat.Constants.MiscFloats;
 import lazycat.Constants.SmallFontNumbers;
+import lazycat.Constants.MediumFontNumbers;
 
 class Assets {
 
@@ -11,6 +12,7 @@ class Assets {
 	var spriteTileSplit:Array<h2d.Tile>;
 	public var sprites:h2d.Tile;
 	public var bigFont:h2d.Font;
+	public var mediumFont:h2d.Font;
 	public var smallFont:h2d.Font;
 
 	public function new() {}
@@ -19,6 +21,10 @@ class Assets {
 		if (bigFont == null) {
 			bigFont = hxd.res.DefaultFont.get().clone();
 			bigFont.resizeTo(BigFontNumbers.size);
+		}
+		if (mediumFont == null) {
+			mediumFont = hxd.res.DefaultFont.get().clone();
+			mediumFont.resizeTo(MediumFontNumbers.size);
 		}
 		if (smallFont == null) {
 			smallFont = hxd.res.DefaultFont.get().clone();

@@ -5,6 +5,7 @@ import lazycat.Constants.Controls;
 import lazycat.Constants.ImageSizes;
 import lazycat.Constants.SmallFontNumbers;
 import lazycat.Constants.TextStrings;
+import lazycat.Constants.MediumFontNumbers;
 
 enum abstract TextScrollerNumbers(Int) from Int to Int {
 	var scrollMultiplier = 200;
@@ -34,7 +35,7 @@ class TextScroller extends hxd.App {
 		this.assets = assets;
 		this.text = text;
 		this.title = title;
-		bottomMargin = SmallFontNumbers.size * 2;
+		bottomMargin = MediumFontNumbers.size * 2;
 		leftMargin = SmallFontNumbers.size;
 		rightMargin = SmallFontNumbers.size;
 		topMargin = BigFontNumbers.size * 2;
@@ -145,9 +146,9 @@ class TextScroller extends hxd.App {
 	}
 
 	inline function generateBackText() {
-		backText = new h2d.Text(assets.smallFont);
+		backText = new h2d.Text(assets.mediumFont);
 		backText.text = TextStrings.back;
-		backText.textColor = SmallFontNumbers.colour;
+		backText.textColor = MediumFontNumbers.colour;
 		s2d.addChild(backText);
 		backText.x = ImageSizes.screenWidth / 2 - backText.textWidth / 2;
 		backText.y = ImageSizes.screenHeight - backText.textHeight;
@@ -156,10 +157,10 @@ class TextScroller extends hxd.App {
 													backText.textHeight,
 													backText);
 		backInteraction.onOver = function(event:hxd.Event) {
-			backText.textColor = SmallFontNumbers.selectColour;
+			backText.textColor = MediumFontNumbers.selectColour;
 		}
 		backInteraction.onOut = function(event:hxd.Event) {
-			backText.textColor = SmallFontNumbers.colour;
+			backText.textColor = MediumFontNumbers.colour;
 		}
 		backInteraction.onClick = goBack;
 

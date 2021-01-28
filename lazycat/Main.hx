@@ -3,6 +3,7 @@ package lazycat;
 import lazycat.Constants.BigFontNumbers;
 import lazycat.Constants.Controls;
 import lazycat.Constants.ImageSizes;
+import lazycat.Constants.MediumFontNumbers;
 import lazycat.Constants.SmallFontNumbers;
 import lazycat.Constants.TextStrings;
 
@@ -39,7 +40,7 @@ class Main extends hxd.App {
 		};
 		s2d.addChild(titleText);
 		titleText.x = ImageSizes.screenWidth / 2 - titleText.textWidth / 2;
-		titleText.y = ImageSizes.screenHeight / 2 - titleText.textHeight / 2;
+		titleText.y = ImageSizes.screenHeight / 2 / 2 - titleText.textHeight / 2;
 
 		var startText:h2d.Text = addMenuItem(TextStrings.start, titleText.y + titleText.textHeight, startHandler);
 		var instructionsText:h2d.Text = addMenuItem(TextStrings.instructions, startText.y + startText.textHeight, instructionsHandler);
@@ -110,9 +111,9 @@ class Main extends hxd.App {
 	}
 
 	function addMenuItem(text, yPosition, callback):h2d.Text {
-		var textObj = new h2d.Text(assets.smallFont);
+		var textObj = new h2d.Text(assets.mediumFont);
 		textObj.text = text;
-		textObj.textColor = SmallFontNumbers.colour;
+		textObj.textColor = MediumFontNumbers.colour;
 		s2d.addChild(textObj);
 		textObj.x = ImageSizes.screenWidth / 2 - textObj.textWidth / 2;
 		textObj.y = yPosition;
@@ -123,10 +124,10 @@ class Main extends hxd.App {
 		menuItems.push(interaction);
 		interaction.onOver = function(event:hxd.Event) {
 			menuIdx = menuItems.indexOf(interaction);
-			textObj.textColor = SmallFontNumbers.selectColour;
+			textObj.textColor = MediumFontNumbers.selectColour;
 		}
 		interaction.onOut = function(event:hxd.Event) {
-			textObj.textColor = SmallFontNumbers.colour;
+			textObj.textColor = MediumFontNumbers.colour;
 		}
 		interaction.onClick = callback;
 

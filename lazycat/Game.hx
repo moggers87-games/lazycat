@@ -3,6 +3,7 @@ package lazycat;
 import lazycat.Constants.BigFontNumbers;
 import lazycat.Constants.Controls;
 import lazycat.Constants.ImageSizes;
+import lazycat.Constants.MediumFontNumbers;
 import lazycat.Constants.MiscFloats;
 import lazycat.Constants.MiscInts;
 import lazycat.Constants.MiscStrings;
@@ -211,20 +212,20 @@ class Game extends hxd.App {
 		};
 		s2d.addChild(winningText);
 		winningText.x = ImageSizes.screenWidth / 2 - winningText.textWidth / 2;
-		winningText.y = ImageSizes.screenHeight / 2 - winningText.textHeight / 2;
+		winningText.y = ImageSizes.screenHeight / 2 / 2 - winningText.textHeight / 2;
 
-		var backText = new h2d.Text(assets.smallFont);
+		var backText = new h2d.Text(assets.mediumFont);
 		backText.text = TextStrings.back;
-		backText.textColor = SmallFontNumbers.colour;
+		backText.textColor = MediumFontNumbers.colour;
 
 		var backInteraction = new h2d.Interactive(winningText.textWidth,
 													backText.textHeight,
 													backText);
 		backInteraction.onOver = function(event:hxd.Event) {
-			backText.textColor = SmallFontNumbers.selectColour;
+			backText.textColor = MediumFontNumbers.selectColour;
 		}
 		backInteraction.onOut = function(event:hxd.Event) {
-			backText.textColor = SmallFontNumbers.colour;
+			backText.textColor = MediumFontNumbers.colour;
 		}
 		backInteraction.onClick = function(event:hxd.Event) {
 			backToMain();
