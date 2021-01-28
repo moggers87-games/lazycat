@@ -14,10 +14,15 @@ enum abstract BigFontNumbers(Int) from Int to Int {
 	var dropShadowColour = 0x737373;
 }
 
+enum abstract MediumFontNumbers(Int) from Int to Int {
+	var size = 50;
+	var colour = 0xFFFFFF;
+	var selectColour = 0x737373;
+}
+
 enum abstract SmallFontNumbers(Int) from Int to Int {
 	var size = 20;
 	var colour = 0xFFFFFF;
-	var selectColour = 0x737373;
 }
 
 enum abstract TextStrings(String) from String to String {
