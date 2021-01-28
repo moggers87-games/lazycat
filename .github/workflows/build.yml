@@ -9,7 +9,43 @@ on:
   schedule:
     - cron: '04 07 * * *'
 
+env:
+  HASHLINK: "hashlink-1.11"
+  HASHLINK_URL: "https://github.com/HaxeFoundation/hashlink/archive/1.11.tar.gz"
+  HASHLINK_BREW_DEPS: "cmake jpeg-turbo libpng sdl2 libogg libvorbis openal-soft mbedtls libuv openssl"
+  HASHLINK_APT_DEPS: "libpng-dev libturbojpeg-dev libvorbis-dev libopenal-dev libsdl2-dev libmbedtls-dev libuv1-dev"
+
 jobs:
+  compile-hashlink:
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        os: [ubuntu-latest, macos-latest]
+    steps:
+      - uses: krdlab/setup-haxe@v1
+        with:
+          haxe-version: "4.1.4"
+      - name: Install Linux dependencies
+        if: matrix.os == 'ubuntu-latest'
+        run: |
+          sudo apt-get update
+          sudo apt-get install ${{ env.HASHLINK_APT_DEPS }}
+      - name: Install Mac dependencies
+        if: matrix.os == 'macos-latest'
+        run: brew install ${{ env.HASHLINK_BREW_DEPS }}
+      - name: Cache hashlink
+        id: cache-hashlink
+        uses: actions/cache@v2
+        with:
+          path: ${{ env.HASHLINK }}
+          key: ${{ runner.os }}-${{ env.HASHLINK }}
+      - name: Build hashlink
+        if: steps.cache-hashlink.outputs.cache-hit != 'true'
+        run: |
+          curl -L ${{ env.HASHLINK_URL }} | tar -xz
+          cd ${{ env.HASHLINK }}
+          make
+
   build-js:
     runs-on: ubuntu-latest
     steps:
@@ -21,6 +57,7 @@ jobs:
           haxe-version: "4.1.4"
       - name: Build
         run: make export/js
+
   build-source:
     runs-on: ubuntu-latest
     steps:
@@ -32,33 +69,10 @@ jobs:
           haxe-version: "4.1.4"
       - name: Build
         run: make export/source
+
   build-hl:
     runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v2
-        with:
-          fetch-depth: 0
-      - uses: krdlab/setup-haxe@v1
-        with:
-          haxe-version: "4.1.4"
-      - name: Install dependencies
-        run: |
-          sudo apt-get update
-          sudo apt-get install libpng-dev libturbojpeg-dev libvorbis-dev libopenal-dev libsdl2-dev libmbedtls-dev libuv1-dev
-      - name: Build hashlink
-        run: |
-          wget https://github.com/HaxeFoundation/hashlink/archive/1.11.tar.gz
-          tar xf 1.11.tar.gz
-          cd hashlink-1.11
-          make
-          sudo make install
-      - name: Build
-        run: make export/hl
-  build-native:
-    runs-on: ${{ matrix.os }}
-    strategy:
-      matrix:
-        os: [ubuntu-latest, macos-latest]
+    needs: compile-hashlink
     steps:
       - uses: actions/checkout@v2
         with:
@@ -70,19 +84,57 @@ jobs:
         if: matrix.os == 'ubuntu-latest'
         run: |
           sudo apt-get update
-          sudo apt-get install libpng-dev libturbojpeg-dev libvorbis-dev libopenal-dev libsdl2-dev libmbedtls-dev libuv1-dev
+          sudo apt-get install ${{ env.HASHLINK_APT_DEPS }}
       - name: Install Mac dependencies
         if: matrix.os == 'macos-latest'
-        run: brew install cmake jpeg-turbo libpng sdl2 libogg libvorbis openal-soft mbedtls libuv openssl
-      - name: Build hashlink
+        run: brew install ${{ env.HASHLINK_BREW_DEPS }}
+      - name: Cache hashlink
+        id: cache-hashlink
+        uses: actions/cache@v2
+        with:
+          path: ${{ env.HASHLINK }}
+          key: ${{ runner.os }}-${{ env.HASHLINK }}
+      - name: Install hashlink
         run: |
-          wget https://github.com/HaxeFoundation/hashlink/archive/1.11.tar.gz
-          tar xf 1.11.tar.gz
-          cd hashlink-1.11
-          make
+          cd ${{ env.HASHLINK }}
+          sudo make install
+      - name: Build
+        run: make export/hl
+
+  build-native:
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        os: [ubuntu-latest, macos-latest]
+    needs: compile-hashlink
+    steps:
+      - uses: actions/checkout@v2
+        with:
+          fetch-depth: 0
+      - uses: krdlab/setup-haxe@v1
+        with:
+          haxe-version: "4.1.4"
+      - name: Install Linux dependencies
+        if: matrix.os == 'ubuntu-latest'
+        run: |
+          sudo apt-get update
+          sudo apt-get install ${{ env.HASHLINK_APT_DEPS }}
+      - name: Install Mac dependencies
+        if: matrix.os == 'macos-latest'
+        run: brew install ${{ env.HASHLINK_BREW_DEPS }}
+      - name: Cache hashlink
+        id: cache-hashlink
+        uses: actions/cache@v2
+        with:
+          path: ${{ env.HASHLINK }}
+          key: ${{ runner.os }}-${{ env.HASHLINK }}
+      - name: Install hashlink
+        run: |
+          cd ${{ env.HASHLINK }}
           sudo make install
       - name: Build
         run: make export/native
+
   lint:
     runs-on: ubuntu-latest
     steps:
