@@ -67,7 +67,17 @@ class Main extends hxd.App {
 
 	function creditsHandler(event:hxd.Event) {
 		hxd.System.setNativeCursor(hxd.Cursor.Default);
-		new TextScroller(assets, TextStrings.credits, hxd.Res.credits.entry.getText());
+		var text = "";
+		text += hxd.Res.credits.entry.getText();
+		text += hxd.Res.creditsLazycat.entry.getText();
+		text += hxd.Res.creditsSound.entry.getText();
+		text += hxd.Res.creditsHaxe.entry.getText();
+		text += hxd.Res.creditsHeaps.entry.getText();
+
+		#if hl
+		text += hxd.Res.creditsHashlink.entry.getText();
+		#end
+		new TextScroller(assets, TextStrings.credits, text);
 	}
 
 	#if sys
