@@ -8,12 +8,13 @@ import lazycat.Constants.MediumFontNumbers;
 
 class Assets {
 
-	public var music:hxd.snd.Channel;
-	var spriteTileSplit:Array<h2d.Tile>;
-	public var sprites:h2d.Tile;
 	public var bigFont:h2d.Font;
 	public var mediumFont:h2d.Font;
+	public var music:hxd.snd.Channel;
 	public var smallFont:h2d.Font;
+	public var sprites:h2d.Tile;
+	var laser:hxd.snd.Channel;
+	var spriteTileSplit:Array<h2d.Tile>;
 
 	public function new() {}
 
@@ -63,6 +64,21 @@ class Assets {
 		}
 	}
 
+	public function fireLaser() {
+		if (laser == null) {
+			laser = hxd.Res.laser.play(true, MiscFloats.laserVolume);
+		}
+		else {
+			laser.pause = false;
+		}
+	}
+
+	public function stopLaser() {
+		if (laser != null) {
+			laser.pause = true;
+		}
+	}
+
 	@:access(hxd.snd.Channel.manager)
 	public function dispose() {
 		if (music != null) {
@@ -70,6 +86,12 @@ class Assets {
 			music.stop();
 			manager.dispose();
 			music = null;
+		}
+		if (laser != null) {
+			var manager:hxd.snd.Manager = laser.manager;
+			laser.stop();
+			manager.dispose();
+			laser = null;
 		}
 		if (sprites != null) {
 			sprites.dispose();
