@@ -53,18 +53,20 @@ enum abstract MouseDirection(Int) from Int to Int {
 class Game extends hxd.App {
 
 	var assets:Assets;
+	var backInteraction:h2d.Interactive;
+	var backText:h2d.Text;
 	var cat:h2d.SpriteBatch;
 	var catEyes:Cat;
 	var catFace:Cat;
+	var highScore:Int;
+	var highScoreText:h2d.Text;
 	var laser:h2d.Graphics;
 	var mice:h2d.SpriteBatch;
 	var pausedOverlay:h2d.Bitmap;
 	var pausedText:h2d.Text;
+	var savePath:String;
 	var timer:Int;
 	var timerText:h2d.Text;
-	var highScore:Int;
-	var highScoreText:h2d.Text;
-	var savePath:String;
 
 	var paused:Bool;
 	var winner:Bool;
@@ -155,14 +157,22 @@ class Game extends hxd.App {
 
 	function checkPause(event:hxd.Event) {
 		if (winner) {
-			return;
+			if (Controls.BACK.contains(event.keyCode)) {
+				backToMain();
+			}
+			else {
+				return;
+			}
 		}
 
 		switch (event.kind) {
 			case EFocusLost:
 				paused = true;
 			case EKeyDown:
-				if (Controls.PAUSE.contains(event.keyCode)) {
+				if (paused && Controls.BACK.contains(event.keyCode)) {
+					backToMain();
+				}
+				else if (Controls.PAUSE.contains(event.keyCode)) {
 					paused = !paused;
 				}
 				else {
@@ -192,11 +202,13 @@ class Game extends hxd.App {
 			s2d.addChild(pausedOverlay);
 			s2d.addChild(pausedText);
 			pausedText.x = ImageSizes.screenWidth / 2 - pausedText.textWidth / 2;
-			pausedText.y = ImageSizes.screenHeight / 2 - pausedText.textHeight / 2;
+			pausedText.y = ImageSizes.screenHeight / 2 / 2 - pausedText.textHeight / 2;
+			addBackText(pausedText);
 		}
 		else if (!paused && pausedText.parent != null) {
 			s2d.removeChild(pausedOverlay);
 			s2d.removeChild(pausedText);
+			s2d.removeChild(backText);
 		}
 	}
 
@@ -211,14 +223,19 @@ class Game extends hxd.App {
 			alpha: 1
 		};
 		s2d.addChild(winningText);
+
 		winningText.x = ImageSizes.screenWidth / 2 - winningText.textWidth / 2;
 		winningText.y = ImageSizes.screenHeight / 2 / 2 - winningText.textHeight / 2;
 
-		var backText = new h2d.Text(assets.mediumFont);
-		backText.text = TextStrings.back;
+		addBackText(winningText);
+	}
+
+	function addBackText(textAbove:h2d.Text) {
+		backText = new h2d.Text(assets.mediumFont);
+		backText.text = TextStrings.mainMenuBack;
 		backText.textColor = MediumFontNumbers.colour;
 
-		var backInteraction = new h2d.Interactive(winningText.textWidth,
+		backInteraction = new h2d.Interactive(textAbove.textWidth,
 													backText.textHeight,
 													backText);
 		backInteraction.onOver = function(event:hxd.Event) {
@@ -233,7 +250,7 @@ class Game extends hxd.App {
 
 		s2d.addChild(backText);
 		backText.x = ImageSizes.screenWidth / 2 - backText.textWidth / 2;
-		backText.y = winningText.y + winningText.textHeight;
+		backText.y = textAbove.y + textAbove.textHeight;
 	}
 
 	override function update(dt:Float) {

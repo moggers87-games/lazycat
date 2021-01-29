@@ -37,6 +37,7 @@ enum abstract TextStrings(String) from String to String {
 	var instructions = "Instructions";
 	var scorePrefix = "Score: ";
 	var highScorePrefix = "Best: ";
+	var mainMenuBack = "Escape";
 }
 
 enum abstract MiscFloats(Float) from Float to Float {
