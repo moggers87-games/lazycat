@@ -78,6 +78,20 @@ class Game extends hxd.App {
 
 		#if sys
 		savePath = StringTools.replace(savePath, "/", "-");
+		try {
+			var xdgConfig:String = Sys.getEnv("XDG_CONFIG_HOME");
+			if (xdgConfig == null) {
+				xdgConfig = haxe.io.Path.join([Sys.getEnv("HOME"), ".config"]);
+			}
+			var saveDir:String = haxe.io.Path.join([xdgConfig, "lazycat"]);
+			if (!sys.FileSystem.exists(saveDir)) {
+				sys.FileSystem.createDirectory(saveDir);
+			}
+			savePath = haxe.io.Path.join([saveDir, savePath]);
+		}
+		catch (e) {
+			Sys.stderr().writeString("Couldn't create config directory, saving data to current working directory instead");
+		}
 		#end
 
 		timer = 0;
