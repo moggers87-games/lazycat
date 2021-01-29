@@ -56,6 +56,7 @@ export/hl: export/hl/lazycat.hl
 export/native/src/lazycat.c: $(SOURCE) .installed-deps-haxe-native
 	mkdir -p $(@D)
 	haxe native.hxml
+	touch $@
 
 export/native/lazycat: export/native/src/lazycat.c
 	gcc $(CFLAGS) -o $@ -std=c11 -I$(@D)/src $(@D)/src/lazycat.c /usr/local/lib/sdl.hdll /usr/local/lib/ui.hdll /usr/local/lib/fmt.hdll /usr/local/lib/openal.hdll /usr/local/lib/ui.hdll $(LIBFLAGS) -lhl -lSDL2 -lm -lopenal $(LIBOPENGL)
