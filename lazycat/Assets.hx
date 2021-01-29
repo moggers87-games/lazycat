@@ -63,9 +63,12 @@ class Assets {
 		}
 	}
 
+	@:access(hxd.snd.Channel.manager)
 	public function dispose() {
 		if (music != null) {
+			var manager:hxd.snd.Manager = music.manager;
 			music.stop();
+			manager.dispose();
 			music = null;
 		}
 		if (sprites != null) {
