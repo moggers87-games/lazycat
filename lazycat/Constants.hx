@@ -42,6 +42,7 @@ enum abstract TextStrings(String) from String to String {
 
 enum abstract MiscFloats(Float) from Float to Float {
 	var musicVolume = 0.25;
+	var laserVolume = 0.30;
 	var percentMultiplier = 0.01;
 	var overlayAlpha = 0.5;
 	var catScalePercent = 0.2;

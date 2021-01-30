@@ -62,6 +62,7 @@ class Game extends hxd.App {
 	var highScoreText:h2d.Text;
 	var laser:h2d.Graphics;
 	var mice:h2d.SpriteBatch;
+	var miceCount:Int;
 	var pausedOverlay:h2d.Bitmap;
 	var pausedText:h2d.Text;
 	var savePath:String;
@@ -107,6 +108,7 @@ class Game extends hxd.App {
 		catFace.y = ImageSizes.screenHeight / 2;
 
 		mice = new h2d.SpriteBatch(assets.sprites);
+		miceCount = MouseNumbers.initialCount;
 		mice.hasUpdate = true;
 		mice.hasRotationScale = true;
 		for (i in 0...MouseNumbers.initialCount) {
@@ -255,14 +257,14 @@ class Game extends hxd.App {
 
 	override function update(dt:Float) {
 		if (paused || winner) {
+			assets.stopLaser();
 			return;
 		}
 
 		laser.clear();
 		catEyes.remove();
 
-		var miceArray:Array<Mouse> = [for (m in mice.getElements()) cast(m, Mouse)];
-		if (miceArray.length == 0 ) {
+		if (mice.isEmpty()) {
 			hxd.System.setNativeCursor(hxd.Cursor.Default);
 			winner = true;
 			assets.music.pause = true;
@@ -285,31 +287,40 @@ class Game extends hxd.App {
 		}
 
 		keyboardMovement();
-		if (Controls.isDown(Controls.FIRELASERS)) {
-			cat.add(catEyes);
-			catEyes.x = catFace.x;
-			catEyes.y = catFace.y;
-			var catCentre:Array<Float> = catFace.centre;
-			for (chosenMouse in miceArray) {
-				var mouseCentre:Array<Float> = chosenMouse.centre;
-				var distance:Float = Math.pow(catCentre[0] - mouseCentre[0], 2) + Math.pow(catCentre[1] - mouseCentre[1], 2);
-				if (Math.floor(distance) <= LaserNumbers.squareOfMaxLaserDistance) {
-					fireAt(chosenMouse, catCentre, mouseCentre);
-					break;
-				}
-			}
-		}
+		fireLasers();
 
-		if (miceArray.length < MouseNumbers.maxCount && hxd.Timer.frameCount % MouseNumbers.reproduceFrame == 0) {
-			var lastMouse:Mouse = miceArray.pop();
+		if (miceCount < MouseNumbers.maxCount && hxd.Timer.frameCount % MouseNumbers.reproduceFrame == 0) {
+			var lastMouse:Mouse = cast(mice.getElements().next(), Mouse);
 			var mouse = new Mouse(assets.mouseTile());
 			mice.add(mouse);
+			miceCount += 1;
 			mouse.x = lastMouse.x;
 			mouse.y = lastMouse.y;
 		}
 
 		timer += 1;
 		printScore();
+	}
+
+	function fireLasers() {
+		if (Controls.isDown(Controls.FIRELASERS)) {
+			cat.add(catEyes);
+			catEyes.x = catFace.x;
+			catEyes.y = catFace.y;
+			var catCentre:Array<Float> = catFace.centre;
+			for (m in mice.getElements()) {
+				var chosenMouse:Mouse = cast(m, Mouse);
+				var mouseCentre:Array<Float> = chosenMouse.centre;
+				var distance:Float = Math.pow(catCentre[0] - mouseCentre[0], 2) + Math.pow(catCentre[1] - mouseCentre[1], 2);
+				if (Math.floor(distance) <= LaserNumbers.squareOfMaxLaserDistance) {
+					fireAt(chosenMouse, catCentre, mouseCentre);
+					assets.fireLaser();
+					return;
+				}
+			}
+		}
+
+		assets.stopLaser();
 	}
 
 	function fireAt(mouse:Mouse, catCentre:Array<Float>, mouseCentre:Array<Float>) {
@@ -335,6 +346,9 @@ class Game extends hxd.App {
 		laser.endFill();
 
 		mouse.hit();
+		if (mouse.batch == null) {
+			miceCount -= 1;
+		}
 	}
 
 	function keyboardMovement() {
