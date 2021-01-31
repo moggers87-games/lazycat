@@ -8,6 +8,16 @@ enum abstract ImageSizes(Int) from Int to Int {
 	var spriteFrames = 3;
 }
 
+enum abstract SliderNumbers(Int) from Int to Int {
+	var height = 50;
+	var width = 400;
+	var sliderColour = 0x737373;
+	var sliderHeight = 20;
+	var cursorColour = 0xFFFFFF;
+	var cursorHeight = 50;
+	var cursorWidth = 20;
+}
+
 enum abstract BigFontNumbers(Int) from Int to Int {
 	var size = 100;
 	var colour = 0xFFFFFF;
@@ -34,25 +44,25 @@ enum abstract TextStrings(String) from String to String {
 	var quit = "Quit";
 	var start = "Start";
 	var credits = "Credits";
+	var options = "Options";
 	var back = "Back";
 	var version = "LazyCat version " + Version.getVersion();
 	var instructions = "Instructions";
 	var scorePrefix = "Score: ";
 	var highScorePrefix = "Best: ";
 	var mainMenuBack = "Escape";
+	var musicVolume = "Music Vol.";
+	var laserVolume = "Laser Vol.";
 }
 
 enum abstract MiscFloats(Float) from Float to Float {
-	var musicVolume = 0.25;
-	var laserVolume = 0.30;
+	var musicVolume = 0.5;
+	var laserVolume = 0.6;
 	var percentMultiplier = 0.01;
 	var overlayAlpha = 0.5;
 	var catScalePercent = 0.2;
 	var mouseScalePercent = 0.1;
-}
-
-enum abstract MiscStrings(String) from String to String {
-	var savePath = "lazycat/highscore";
+	var sliderStep = 0.1;
 }
 
 enum abstract MiscInts(Int) from Int to Int {

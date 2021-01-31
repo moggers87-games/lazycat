@@ -6,7 +6,6 @@ import lazycat.Constants.ImageSizes;
 import lazycat.Constants.MediumFontNumbers;
 import lazycat.Constants.MiscFloats;
 import lazycat.Constants.MiscInts;
-import lazycat.Constants.MiscStrings;
 import lazycat.Constants.SmallFontNumbers;
 import lazycat.Constants.TextStrings;
 import gameUtils.RandomUtils;
@@ -66,7 +65,6 @@ class Game extends hxd.App {
 	var miceCount:Int;
 	var pausedOverlay:h2d.Bitmap;
 	var pausedText:h2d.Text;
-	var savePath:String;
 	var timer:Int;
 	var timerText:h2d.Text;
 
@@ -76,28 +74,9 @@ class Game extends hxd.App {
 	public function new(assets:Assets) {
 		super();
 		this.assets = assets;
-		savePath = MiscStrings.savePath;
-
-		#if sys
-		savePath = StringTools.replace(savePath, "/", "-");
-		try {
-			var xdgConfig:String = Sys.getEnv("XDG_CONFIG_HOME");
-			if (xdgConfig == null) {
-				xdgConfig = haxe.io.Path.join([Sys.getEnv("HOME"), ".config"]);
-			}
-			var saveDir:String = haxe.io.Path.join([xdgConfig, "lazycat"]);
-			if (!sys.FileSystem.exists(saveDir)) {
-				sys.FileSystem.createDirectory(saveDir);
-			}
-			savePath = haxe.io.Path.join([saveDir, savePath]);
-		}
-		catch (e) {
-			Sys.stderr().writeString("Couldn't create config directory, saving data to current working directory instead");
-		}
-		#end
 
 		timer = 0;
-		highScore = hxd.Save.load(MiscInts.defaultHighScore, savePath);
+		highScore = assets.options.get("highscore");
 
 		paused = false;
 		winner = false;
@@ -288,7 +267,7 @@ class Game extends hxd.App {
 			s2d.over(highScoreText);
 
 			if (timer < highScore) {
-				hxd.Save.save(timer, savePath);
+				assets.options.set("highscore", timer);
 			}
 			generateWinningText();
 
@@ -391,8 +370,9 @@ class Game extends hxd.App {
 		catFace.y += y;
 	}
 
-	inline function backToMain() {
+	function backToMain() {
 		hxd.System.setNativeCursor(hxd.Cursor.Default);
+		assets.options.save();
 		new Main(assets);
 	}
 
