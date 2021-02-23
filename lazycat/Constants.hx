@@ -1,5 +1,7 @@
 package lazycat;
 
+import gameUtils.Version;
+
 enum abstract ImageSizes(Int) from Int to Int {
 	var screenHeight = 600;
 	var screenWidth = 800;
@@ -33,7 +35,7 @@ enum abstract TextStrings(String) from String to String {
 	var start = "Start";
 	var credits = "Credits";
 	var back = "Back";
-	var version = "LazyCat version " + Utils.getVersion();
+	var version = "LazyCat version " + Version.getVersion();
 	var instructions = "Instructions";
 	var scorePrefix = "Score: ";
 	var highScorePrefix = "Best: ";
