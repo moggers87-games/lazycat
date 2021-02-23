@@ -6,10 +6,7 @@ import lazycat.Constants.ImageSizes;
 import lazycat.Constants.SmallFontNumbers;
 import lazycat.Constants.TextStrings;
 import lazycat.Constants.MediumFontNumbers;
-
-enum abstract TextScrollerNumbers(Int) from Int to Int {
-	var scrollMultiplier = 200;
-}
+import gameUtils.ScrollController;
 
 class TextScroller extends hxd.App {
 
@@ -21,24 +18,11 @@ class TextScroller extends hxd.App {
 	var titleText:h2d.Text;
 	var backText:h2d.Text;
 
-	var bottomMargin:Float;
-	var leftMargin:Float;
-	var rightMargin:Float;
-	var topMargin:Float;
-
-	var dragScrollingLastPosition:Float;
-	var yScrollMax:Float;
-	var yScrollMin:Float;
-
 	public function new(assets:Assets, title:String, text:String) {
 		super();
 		this.assets = assets;
 		this.text = text;
 		this.title = title;
-		bottomMargin = MediumFontNumbers.size * 2;
-		leftMargin = SmallFontNumbers.size;
-		rightMargin = SmallFontNumbers.size;
-		topMargin = BigFontNumbers.size * 2;
 	}
 
 	override function init() {
@@ -49,70 +33,23 @@ class TextScroller extends hxd.App {
 		generateBackText();
 
 		scrollText = new h2d.Text(assets.smallFont);
-		scrollText.maxWidth = ImageSizes.screenWidth - leftMargin - rightMargin;
 		scrollText.text = text;
 		scrollText.textColor = SmallFontNumbers.colour;
 		s2d.addChild(scrollText);
-		scrollText.y = topMargin;
-		scrollText.x = leftMargin;
-
-		yScrollMin = ImageSizes.screenHeight - bottomMargin - scrollText.textHeight;
-		yScrollMax = scrollText.y;
 
 		s2d.under(scrollText);
 		s2d.over(titleText);
 		s2d.over(backText);
-		if (scrollText.textHeight > (ImageSizes.screenHeight - scrollText.y)) {
-			s2d.addEventListener(scrollMe);
-		}
-	}
 
-	function dragScroll(event:hxd.Event) {
-		event.propagate = false;
-		switch (event.kind) {
-			case ERelease, EReleaseOutside, EFocusLost, EOut:
-				s2d.stopDrag();
-			case EMove:
-				scrollText.y += event.relY - dragScrollingLastPosition;
-				dragScrollingLastPosition = event.relY;
-				limitScrollY();
-			default:
-		}
-	}
+		new ScrollController(scrollText, s2d, BigFontNumbers.size * 2, SmallFontNumbers.size,
+								MediumFontNumbers.size * 2, SmallFontNumbers.size);
 
-	function scrollMe(event:hxd.Event) {
-		switch (event.kind) {
-			case EWheel:
-				scrollText.y += (event.wheelDelta * TextScrollerNumbers.scrollMultiplier);
-				limitScrollY();
-			case EKeyDown:
-				if (Controls.BACK.contains(event.keyCode)) {
-					goBack();
-					return;
-				}
-				if (Controls.MOVEUP.contains(event.keyCode)) {
-					scrollText.y += SmallFontNumbers.size;
-				}
-				else if (Controls.MOVEDOWN.contains(event.keyCode)) {
-					scrollText.y -= SmallFontNumbers.size;
-				}
-				limitScrollY();
-			case EPush:
-				if (event.relY > topMargin && event.relY < (ImageSizes.screenHeight - bottomMargin)) {
-					dragScrollingLastPosition = event.relY;
-					s2d.startDrag(dragScroll);
-				}
-			default:
-		}
-	}
-
-	function limitScrollY() {
-		if (scrollText.y > yScrollMax) {
-			scrollText.y = yScrollMax;
-		}
-		else if (scrollText.y < yScrollMin) {
-			scrollText.y = yScrollMin;
-		}
+		s2d.addEventListener(function(event:hxd.Event) {
+			if (event.kind == EKeyDown && Controls.BACK.contains(event.keyCode)) {
+				goBack();
+				return;
+			}
+		});
 	}
 
 	inline function generateTitleText() {

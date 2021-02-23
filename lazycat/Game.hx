@@ -9,6 +9,7 @@ import lazycat.Constants.MiscInts;
 import lazycat.Constants.MiscStrings;
 import lazycat.Constants.SmallFontNumbers;
 import lazycat.Constants.TextStrings;
+import gameUtils.RandomUtils;
 
 enum abstract LaserNumbers(Int) from Int to Int {
 	var eyePulseMin = 8;
@@ -343,12 +344,12 @@ class Game extends hxd.App {
 		var leftEyeX:Float = catCentre[0] - LaserNumbers.eyeOffsetX;
 		var leftEyeY:Float = rightEyeY;
 
-		var eyePulse:Int = Utils.randomInt(LaserNumbers.eyePulseMin, LaserNumbers.eyePulseMax);
+		var eyePulse:Int = RandomUtils.randomInt(LaserNumbers.eyePulseMin, LaserNumbers.eyePulseMax);
 		laser.beginFill(LaserNumbers.pulseColour, 1);
 		laser.lineStyle(0, 0, 0);
 		laser.drawCircle(rightEyeX, rightEyeY, eyePulse);
 		laser.drawCircle(leftEyeX, leftEyeY, eyePulse);
-		laser.drawCircle(mouseCentre[0], mouseCentre[1], Utils.randomInt(LaserNumbers.eyePulseMin, LaserNumbers.eyePulseMax));
+		laser.drawCircle(mouseCentre[0], mouseCentre[1], RandomUtils.randomInt(LaserNumbers.eyePulseMin, LaserNumbers.eyePulseMax));
 
 		laser.beginFill(0, 0);
 		laser.lineStyle(LaserNumbers.width, LaserNumbers.colour);
@@ -446,15 +447,15 @@ class Mouse extends ElementWithCentre {
 	}
 
 	function changeDirection() {
-		direction = Utils.randomInt(0, MouseDirection.all);
+		direction = RandomUtils.randomInt(0, MouseDirection.all);
 	}
 
 	override function update(dt:Float):Bool {
 		if (paused) {
 			return true;
 		}
-		var distance:Int = Utils.randomInt(MouseNumbers.distanceMin, MouseNumbers.distanceMax);
-		var change:Bool = Utils.randomChance(MouseNumbers.directionChance);
+		var distance:Int = RandomUtils.randomInt(MouseNumbers.distanceMin, MouseNumbers.distanceMax);
+		var change:Bool = RandomUtils.randomChance(MouseNumbers.directionChance);
 
 		super.update(dt);
 
