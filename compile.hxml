@@ -3,3 +3,5 @@
 --main lazycat.Main
 --class-path lazycat
 --define resourcesPath=lazycat/assets
+--dce full
+--define analyzer-optimize
