@@ -10,15 +10,13 @@ import lazycat.Constants.TextStrings;
 class Main extends hxd.App {
 
 	var assets:Assets;
-	var menuItems:Array<h2d.Interactive>;
-	var menuIdx:Int;
 	var titleText:h2d.Text;
+	var menu:Menu;
 
 	public function new(assets:Assets) {
 		super();
 		this.assets = assets;
-		menuItems = [];
-		menuIdx = -1;
+		menu = new Menu();
 
 		var window:hxd.Window = hxd.Window.getInstance();
 		window.title = TextStrings.title;
@@ -26,7 +24,7 @@ class Main extends hxd.App {
 
 	override function init() {
 		s2d.scaleMode = h2d.Scene.ScaleMode.LetterBox(ImageSizes.screenWidth, ImageSizes.screenHeight);
-		s2d.addEventListener(keyboardControl);
+		s2d.addEventListener(menu.keyboardControl);
 		assets.initFonts();
 
 		titleText = new h2d.Text(assets.bigFont);
@@ -43,7 +41,8 @@ class Main extends hxd.App {
 		titleText.y = ImageSizes.screenHeight / 2 / 2 - titleText.textHeight / 2;
 
 		var startText:h2d.Text = addMenuItem(TextStrings.start, titleText.y + titleText.textHeight, startHandler);
-		var instructionsText:h2d.Text = addMenuItem(TextStrings.instructions, startText.y + startText.textHeight, instructionsHandler);
+		var optionsText:h2d.Text = addMenuItem(TextStrings.options, startText.y + startText.textHeight, optionsHandler);
+		var instructionsText:h2d.Text = addMenuItem(TextStrings.instructions, optionsText.y + optionsText.textHeight, instructionsHandler);
 		var creditsText:h2d.Text = addMenuItem(TextStrings.credits, instructionsText.y + instructionsText.textHeight, creditsHandler);
 		#if sys
 		addMenuItem(TextStrings.quit, creditsText.y + creditsText.textHeight, quitHandler);
@@ -88,36 +87,8 @@ class Main extends hxd.App {
 	}
 	#end
 
-	function keyboardControl(event:hxd.Event) {
-		if (event.kind != EKeyDown) {
-			return;
-		}
-		var newIndex:Int = menuIdx;
-		var menuItem:h2d.Interactive = menuItems[menuIdx];
-		if (Controls.MOVEUP.contains(event.keyCode)) {
-			newIndex -= 1;
-		}
-		else if (Controls.MOVEDOWN.contains(event.keyCode)) {
-			newIndex += 1;
-		}
-		else if (Controls.MENUSELECT.contains(event.keyCode) && menuItem != null) {
-			menuItem.onClick(event);
-		}
-		else {
-			return;
-		}
-		if (newIndex < 0) {
-			newIndex = 0;
-		}
-		else if (newIndex >= menuItems.length) {
-			newIndex = menuItems.length - 1;
-		}
-		var oldItem:h2d.Interactive = menuItems[menuIdx];
-		if (oldItem != null) {
-			oldItem.onOut(new hxd.Event(EOut));
-		}
-		menuIdx = newIndex;
-		menuItems[menuIdx].onOver(new hxd.Event(EOver));
+	function optionsHandler(event:hxd.Event) {
+		new OptionsScreen(assets);
 	}
 
 	function addMenuItem(text, yPosition, callback):h2d.Text {
@@ -131,13 +102,18 @@ class Main extends hxd.App {
 		var interaction = new h2d.Interactive(titleText.textWidth,
 												textObj.textHeight,
 												textObj);
-		menuItems.push(interaction);
+		menu.addItem(interaction);
 		interaction.onOver = function(event:hxd.Event) {
-			menuIdx = menuItems.indexOf(interaction);
+			menu.pick(interaction);
 			textObj.textColor = MediumFontNumbers.selectColour;
 		}
 		interaction.onOut = function(event:hxd.Event) {
 			textObj.textColor = MediumFontNumbers.colour;
+		}
+		interaction.onKeyDown = function(event:hxd.Event) {
+			if (Controls.MENUSELECT.contains(event.keyCode)) {
+				callback(event);
+			}
 		}
 		interaction.onClick = callback;
 

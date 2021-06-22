@@ -2,7 +2,6 @@ package lazycat;
 
 import lazycat.Constants.BigFontNumbers;
 import lazycat.Constants.ImageSizes;
-import lazycat.Constants.MiscFloats;
 import lazycat.Constants.SmallFontNumbers;
 import lazycat.Constants.MediumFontNumbers;
 
@@ -13,10 +12,14 @@ class Assets {
 	public var music:hxd.snd.Channel;
 	public var smallFont:h2d.Font;
 	public var sprites:h2d.Tile;
+	public var options:Options;
 	var laser:hxd.snd.Channel;
 	var spriteTileSplit:Array<h2d.Tile>;
 
-	public function new() {}
+	public function new() {
+		options = new Options();
+		options.load();
+	}
 
 	public function initFonts() {
 		if (bigFont == null) {
@@ -56,19 +59,21 @@ class Assets {
 
 	public function initMusic() {
 		if (music == null) {
-			music = hxd.Res.gaslampfunworks.play(true, MiscFloats.musicVolume);
+			music = hxd.Res.gaslampfunworks.play(true, options.get("musicVolume"));
 		}
 		else {
 			music.position = 0.0;
+			music.volume = options.get("musicVolume");
 			music.pause = false;
 		}
 	}
 
 	public function fireLaser() {
 		if (laser == null) {
-			laser = hxd.Res.laser.play(true, MiscFloats.laserVolume);
+			laser = hxd.Res.laser.play(true, options.get("laserVolume"));
 		}
 		else {
+			laser.volume = options.get("laserVolume");
 			laser.pause = false;
 		}
 	}
@@ -81,17 +86,19 @@ class Assets {
 
 	@:access(hxd.snd.Channel.manager)
 	public function dispose() {
+		var manager:hxd.snd.Manager = null;
 		if (music != null) {
-			var manager:hxd.snd.Manager = music.manager;
+			manager = music.manager;
 			music.stop();
-			manager.dispose();
 			music = null;
 		}
 		if (laser != null) {
-			var manager:hxd.snd.Manager = laser.manager;
+			manager = laser.manager;
 			laser.stop();
-			manager.dispose();
 			laser = null;
+		}
+		if (manager != null) {
+			manager.dispose();
 		}
 		if (sprites != null) {
 			sprites.dispose();
