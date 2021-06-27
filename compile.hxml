@@ -1,5 +1,6 @@
---library heaps:1.8.0
---library game-utils:git:https://github.com/moggers87-games/game-utils.git#66c46e6dd0dfd6b444d22a7d8f9da59aaa2b63d3
+--library heaps:1.9.1
+--library game-utils:git:https://github.com/moggers87-games/game-utils.git#639c95cb628adabc994b90294c1161a02b999b4a
+--library heeps:git:https://github.com/Yanrishatum/heeps.git#ac0252124fc3561cf6a90d95adc6bb880e648b77
 --main lazycat.Main
 --class-path lazycat
 --define resourcesPath=lazycat/assets

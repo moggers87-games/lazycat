@@ -3,3 +3,4 @@ Originally a Python game by Matt Molyneaux and Matt Squire, rewritten by Matt Mo
 All art created by Matt Molyneaux with Inkscape.
 
 Code available at https://github.com/moggers87/lazycat
+

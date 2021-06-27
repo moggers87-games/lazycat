@@ -61,21 +61,21 @@ class Main extends hxd.App {
 
 	function instructionsHandler(event:hxd.Event) {
 		hxd.System.setNativeCursor(hxd.Cursor.Default);
-		new TextScroller(assets, TextStrings.instructions, hxd.Res.instructions.entry.getText());
+		new TextScroller(assets, TextStrings.instructions, gameUtils.FileMacro.getContent("lazycat/data/instructions.txt"));
 	}
 
 	function creditsHandler(event:hxd.Event) {
 		hxd.System.setNativeCursor(hxd.Cursor.Default);
-		var text = "";
-		text += hxd.Res.credits.entry.getText();
-		text += hxd.Res.creditsLazycat.entry.getText();
-		text += hxd.Res.creditsSound.entry.getText();
-		text += hxd.Res.creditsHaxe.entry.getText();
-		text += hxd.Res.creditsHeaps.entry.getText();
-
+		var text:String = gameUtils.FileMacro.getContent("lazycat/data/credits.txt") +
+		gameUtils.FileMacro.getContent("lazycat/data/creditsLazycat.txt") +
+		gameUtils.FileMacro.getContent("lazycat/data/creditsSound.txt") +
+		gameUtils.FileMacro.getContent("lazycat/data/creditsHaxe.txt") +
 		#if hl
-		text += hxd.Res.creditsHashlink.entry.getText();
+		gameUtils.FileMacro.getContent("lazycat/data/creditsHashlink.txt") +
 		#end
+		gameUtils.FileMacro.getContent("lazycat/data/creditsHeaps.txt") +
+		gameUtils.FileMacro.getContent("lazycat/data/creditsHeeps.txt");
+
 		new TextScroller(assets, TextStrings.credits, text);
 	}
 
@@ -120,8 +120,13 @@ class Main extends hxd.App {
 		return textObj;
 	}
 
+	override function loadAssets(done) {
+		var loader:cherry.res.ManifestLoader = cherry.fs.ManifestBuilder.initManifest("assets");
+		loader.onLoaded = done;
+		loader.loadManifestFiles();
+	}
+
 	static function main() {
-		hxd.Res.initEmbed();
 		new Main(new Assets());
 	}
 }
