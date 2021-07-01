@@ -48,6 +48,8 @@ export/hl/lazycat.hl: $(SOURCE) .installed-deps-haxe-hl
 	haxe hl.hxml
 
 export/hl: export/hl/lazycat.hl
+	mkdir -p $@/assets
+	cp lazycat/assets/* $@/assets
 	cp /usr/local/lib/fmt.hdll $@
 	cp /usr/local/lib/openal.hdll $@
 	cp /usr/local/lib/sdl.hdll $@
@@ -62,6 +64,12 @@ export/native/lazycat: export/native/src/lazycat.c
 	gcc $(CFLAGS) -o $@ -std=c11 -I$(@D)/src $(@D)/src/lazycat.c /usr/local/lib/sdl.hdll /usr/local/lib/ui.hdll /usr/local/lib/fmt.hdll /usr/local/lib/openal.hdll /usr/local/lib/ui.hdll $(LIBFLAGS) -lhl -lSDL2 -lm -lopenal $(LIBOPENGL)
 
 export/native: export/native/lazycat
+	mkdir -p $@/assets
+	cp lazycat/assets/* $@/assets
+	cp /usr/local/lib/fmt.hdll $@
+	cp /usr/local/lib/openal.hdll $@
+	cp /usr/local/lib/sdl.hdll $@
+	cp /usr/local/lib/ui.hdll $@
 
 export/js/lazycat.js: $(SOURCE) .installed-deps-haxe-js
 	mkdir -p $(@D)
@@ -73,6 +81,8 @@ export/js/index.html: lazycat/data/index.html
 
 export/js: export/js/lazycat.js export/js/index.html
 	rm -f $@/*.zip
+	mkdir -p $@/assets
+	cp lazycat/assets/* $@/assets
 	zip -j $@/lazycat-$(VERSION).zip $@/*
 	cp $@/lazycat-$(VERSION).zip $@/lazycat-game.zip
 	date -Iseconds

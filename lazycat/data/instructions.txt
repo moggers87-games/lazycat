@@ -16,3 +16,4 @@ LaserMice Behaviour
 -------------------
 
 LaserMice move randomly around the screen and occasionally multiply. Do not try to feed LaserMice to LazyCat.
+
