@@ -47,29 +47,44 @@ export/hl/lazycat.hl: $(SOURCE) .installed-deps-haxe-hl
 	mkdir -p $(@D)
 	haxe hl.hxml
 
-export/hl: export/hl/lazycat.hl
-	mkdir -p $@/assets
-	cp lazycat/assets/* $@/assets
-	cp /usr/local/lib/fmt.hdll $@
-	cp /usr/local/lib/openal.hdll $@
-	cp /usr/local/lib/sdl.hdll $@
-	cp /usr/local/lib/ui.hdll $@
+export/hl/assets:
+	mkdir -p $@
+	cp lazycat/assets/* $@
+
+export/hl: export/hl/lazycat.hl export/hl/assets
+	tar --create --gzip --file lazycat-hl-$(VERSION).tar.gz --exclude=$@/src --transform "s/^export\/native/lazycat/" $@
+	mv lazycat-hl-$(VERSION).tar.gz $@
+	date -Iseconds
 
 export/native/src/lazycat.c: $(SOURCE) .installed-deps-haxe-native
 	mkdir -p $(@D)
 	haxe native.hxml
 	touch $@
 
-export/native/lazycat: export/native/src/lazycat.c
-	gcc $(CFLAGS) -o $@ -std=c11 -I$(@D)/src $(@D)/src/lazycat.c /usr/local/lib/sdl.hdll /usr/local/lib/ui.hdll /usr/local/lib/fmt.hdll /usr/local/lib/openal.hdll /usr/local/lib/ui.hdll $(LIBFLAGS) -lhl -lSDL2 -lm -lopenal $(LIBOPENGL)
+export/native/game.bin: export/native/src/lazycat.c
+	mkdir -p $(@D)
+	cp /usr/local/lib/fmt.hdll $(@D)
+	cp /usr/local/lib/openal.hdll $(@D)
+	cp /usr/local/lib/sdl.hdll $(@D)
+	cp /usr/local/lib/ui.hdll $(@D)
+	cp /usr/local/lib/libhl.so $(@D)
+	cd $(@D); gcc $(CFLAGS) -o $(@F) -std=c11 -Isrc src/lazycat.c $(LIBFLAGS) -lhl sdl.hdll ui.hdll fmt.hdll openal.hdll ui.hdll -lSDL2 -lm -lopenal $(LIBOPENGL)
 
-export/native: export/native/lazycat
-	mkdir -p $@/assets
-	cp lazycat/assets/* $@/assets
-	cp /usr/local/lib/fmt.hdll $@
-	cp /usr/local/lib/openal.hdll $@
-	cp /usr/local/lib/sdl.hdll $@
-	cp /usr/local/lib/ui.hdll $@
+export/native/lazycat: export/native/game.bin scripts/native.sh
+	cp scripts/native.sh $@
+
+export/native/assets:
+	mkdir -p $@
+	cp lazycat/assets/* $@
+
+export/native: export/native/lazycat export/native/assets
+	tar --create --gzip --file lazycat-$(UNAME)-$(VERSION).tar.gz --exclude=$@/src --transform "s/^export\/native/lazycat/" $@
+	mv lazycat-$(UNAME)-$(VERSION).tar.gz $@
+	date -Iseconds
+
+export/js/assets:
+	mkdir -p $@
+	cp lazycat/assets/* $@
 
 export/js/lazycat.js: $(SOURCE) .installed-deps-haxe-js
 	mkdir -p $(@D)
@@ -79,12 +94,9 @@ export/js/index.html: lazycat/data/index.html
 	mkdir -p $(@D)
 	cp lazycat/data/index.html $@
 
-export/js: export/js/lazycat.js export/js/index.html
-	rm -f $@/*.zip
-	mkdir -p $@/assets
-	cp lazycat/assets/* $@/assets
-	zip -j $@/lazycat-$(VERSION).zip $@/*
-	cp $@/lazycat-$(VERSION).zip $@/lazycat-game.zip
+export/js: export/js/lazycat.js export/js/index.html export/js/assets
+	tar --create --gzip --file lazycat-js-$(VERSION).tar.gz --transform "s/^export\/js/lazycat/" $@
+	mv lazycat-js-$(VERSION).tar.gz $@
 	date -Iseconds
 
 export/source: $(SOURCE)
@@ -105,4 +117,4 @@ test-hl: export/hl
 
 .PHONY: test-native
 test-native: export/native
-	cd export/native; ./lazycat
+	export/native/lazycat
