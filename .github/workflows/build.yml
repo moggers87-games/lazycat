@@ -12,7 +12,7 @@ on:
 env:
   HASHLINK: "hashlink-1.11"
   HASHLINK_URL: "https://github.com/HaxeFoundation/hashlink/archive/1.11.tar.gz"
-  HASHLINK_BREW_DEPS: "cmake jpeg-turbo libpng sdl2 libogg libvorbis openal-soft mbedtls libuv openssl"
+  HASHLINK_BREW_DEPS: "cmake jpeg-turbo libpng sdl2 libogg libvorbis openal-soft mbedtls libuv openssl gnu-tar coreutils"
   HASHLINK_APT_DEPS: "libpng-dev libturbojpeg-dev libvorbis-dev libopenal-dev libsdl2-dev libmbedtls-dev libuv1-dev"
 
 jobs:

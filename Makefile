@@ -5,12 +5,16 @@ UNAME := $(shell uname)
 CFLAGS = -O3
 LIBFLAGS =
 LIBOPENGL = -lGL
+TAR_CMD = tar
+DATE_CMD = date
 
 ifeq ($(UNAME),Darwin)
 # taken from hashlink's Makefile
 CFLAGS += -I /usr/local/include -I /usr/local/opt/libjpeg-turbo/include -I /usr/local/opt/jpeg-turbo/include -I /usr/local/opt/sdl2/include/SDL2 -I /usr/local/opt/libvorbis/include -I /usr/local/opt/openal-soft/include -Dopenal_soft
 LIBFLAGS += -L/usr/local/opt/libjpeg-turbo/lib -L/usr/local/opt/jpeg-turbo/lib -L/usr/local/lib -L/usr/local/opt/libvorbis/lib -L/usr/local/opt/openal-soft/lib
 LIBOPENGL = -framework OpenGL
+TAR_CMD = gtar
+DATE_CMD = gdate
 endif
 
 .PHONY: all
@@ -52,9 +56,9 @@ export/hl/assets:
 	cp lazycat/assets/* $@
 
 export/hl: export/hl/lazycat.hl export/hl/assets
-	tar --create --gzip --file lazycat-hl-$(VERSION).tar.gz --exclude=$@/src --transform "s/^export\/native/lazycat/" $@
+	$(TAR_CMD) --create --gzip --file lazycat-hl-$(VERSION).tar.gz --exclude=$@/src --transform "s/^export\/native/lazycat/" $@
 	mv lazycat-hl-$(VERSION).tar.gz $@
-	date -Iseconds
+	$(DATE_CMD) -Iseconds
 
 export/native/src/lazycat.c: $(SOURCE) .installed-deps-haxe-native
 	mkdir -p $(@D)
@@ -67,7 +71,7 @@ export/native/game.bin: export/native/src/lazycat.c
 	cp /usr/local/lib/openal.hdll $(@D)
 	cp /usr/local/lib/sdl.hdll $(@D)
 	cp /usr/local/lib/ui.hdll $(@D)
-	cp /usr/local/lib/libhl.so $(@D)
+	cp /usr/local/lib/libhl.* $(@D)
 	cd $(@D); gcc $(CFLAGS) -o $(@F) -std=c11 -Isrc src/lazycat.c $(LIBFLAGS) -lhl sdl.hdll ui.hdll fmt.hdll openal.hdll ui.hdll -lSDL2 -lm -lopenal $(LIBOPENGL)
 
 export/native/lazycat: export/native/game.bin scripts/native.sh
@@ -78,9 +82,9 @@ export/native/assets:
 	cp lazycat/assets/* $@
 
 export/native: export/native/lazycat export/native/assets
-	tar --create --gzip --file lazycat-$(UNAME)-$(VERSION).tar.gz --exclude=$@/src --transform "s/^export\/native/lazycat/" $@
+	$(TAR_CMD) --create --gzip --file lazycat-$(UNAME)-$(VERSION).tar.gz --exclude=$@/src --transform "s/^export\/native/lazycat/" $@
 	mv lazycat-$(UNAME)-$(VERSION).tar.gz $@
-	date -Iseconds
+	$(DATE_CMD) -Iseconds
 
 export/js/assets:
 	mkdir -p $@
@@ -95,9 +99,9 @@ export/js/index.html: lazycat/data/index.html
 	cp lazycat/data/index.html $@
 
 export/js: export/js/lazycat.js export/js/index.html export/js/assets
-	tar --create --gzip --file lazycat-js-$(VERSION).tar.gz --transform "s/^export\/js/lazycat/" $@
+	$(TAR_CMD) --create --gzip --file lazycat-js-$(VERSION).tar.gz --transform "s/^export\/js/lazycat/" $@
 	mv lazycat-js-$(VERSION).tar.gz $@
-	date -Iseconds
+	$(DATE_CMD) -Iseconds
 
 export/source: $(SOURCE)
 	rm -f $@/*.zip
@@ -105,7 +109,7 @@ export/source: $(SOURCE)
 	echo $(VERSION) > .version
 	git archive --output=export/source/lazycat-source-$(VERSION).zip --prefix=lazycat/ --format=zip --add-file=.version HEAD
 	rm .version
-	date -Iseconds
+	$(DATE_CMD) -Iseconds
 
 .PHONY: test-js
 test-js: export/js
