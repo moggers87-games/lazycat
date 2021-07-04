@@ -57,6 +57,11 @@ jobs:
           haxe-version: "4.1.4"
       - name: Build
         run: make export/js
+      - name: Upload
+        uses: actions/upload-artifact@v2
+        with:
+          name: lazycat
+          path: export/js/lazycat-*.tar.gz
 
   build-source:
     runs-on: ubuntu-latest
@@ -69,6 +74,11 @@ jobs:
           haxe-version: "4.1.4"
       - name: Build
         run: make export/source
+      - name: Upload
+        uses: actions/upload-artifact@v2
+        with:
+          name: lazycat
+          path: export/source/lazycat-*.tar.gz
 
   build-hl:
     runs-on: ubuntu-latest
@@ -100,6 +110,11 @@ jobs:
           sudo make install
       - name: Build
         run: make export/hl
+      - name: Upload
+        uses: actions/upload-artifact@v2
+        with:
+          name: lazycat
+          path: export/hl/lazycat-*.tar.gz
 
   build-native:
     runs-on: ${{ matrix.os }}
@@ -134,6 +149,11 @@ jobs:
           sudo make install
       - name: Build
         run: make export/native
+      - name: Upload
+        uses: actions/upload-artifact@v2
+        with:
+          name: lazycat
+          path: export/native/lazycat-*.tar.gz
 
   lint:
     runs-on: ubuntu-latest
