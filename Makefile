@@ -56,7 +56,7 @@ export/hl/assets:
 	cp lazycat/assets/* $@
 
 export/hl: export/hl/lazycat.hl export/hl/assets
-	$(TAR_CMD) --create --gzip --file lazycat-hl-$(VERSION).tar.gz --exclude=$@/src --transform "s/^export\/native/lazycat/" $@
+	$(TAR_CMD) --create --gzip --file lazycat-hl-$(VERSION).tar.gz --exclude=$@/src --transform "s/^export\/hl/lazycat/" $@
 	mv lazycat-hl-$(VERSION).tar.gz $@
 	$(DATE_CMD) -Iseconds
 
@@ -82,8 +82,8 @@ export/native/assets:
 	cp lazycat/assets/* $@
 
 export/native: export/native/lazycat export/native/assets
-	$(TAR_CMD) --create --gzip --file lazycat-$(UNAME)-$(VERSION).tar.gz --exclude=$@/src --transform "s/^export\/native/lazycat/" $@
-	mv lazycat-$(UNAME)-$(VERSION).tar.gz $@
+	$(TAR_CMD) --create --gzip --file lazycat-native-$(UNAME)-$(VERSION).tar.gz --exclude=$@/src --transform "s/^export\/native/lazycat/" $@
+	mv lazycat-native-$(UNAME)-$(VERSION).tar.gz $@
 	$(DATE_CMD) -Iseconds
 
 export/js/assets:
