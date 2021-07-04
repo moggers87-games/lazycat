@@ -104,10 +104,9 @@ export/js: export/js/lazycat.js export/js/index.html export/js/assets
 	$(DATE_CMD) -Iseconds
 
 export/source: $(SOURCE)
-	rm -f $@/*.zip
 	mkdir -p $@
 	echo $(VERSION) > .version
-	git archive --output=export/source/lazycat-source-$(VERSION).zip --prefix=lazycat/ --format=zip --add-file=.version HEAD
+	git archive --output=export/source/lazycat-source-$(VERSION).tar.gz --prefix=lazycat/ --format=tar.gz --add-file=.version HEAD
 	rm .version
 	$(DATE_CMD) -Iseconds
 
