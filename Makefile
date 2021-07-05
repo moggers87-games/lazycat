@@ -55,7 +55,10 @@ export/hl/assets:
 	mkdir -p $@
 	cp lazycat/assets/* $@
 
-export/hl: export/hl/lazycat.hl export/hl/assets
+export/hl/README.md:
+	cp misc/README-hl.md $@
+
+export/hl: export/hl/lazycat.hl export/hl/assets export/hl/README.md
 	$(TAR_CMD) --create --gzip --file lazycat-hl-$(VERSION).tar.gz --exclude=$@/src --transform "s/^export\/hl/lazycat/" $@
 	mv lazycat-hl-$(VERSION).tar.gz $@
 	$(DATE_CMD) -Iseconds
@@ -81,7 +84,10 @@ export/native/assets:
 	mkdir -p $@
 	cp lazycat/assets/* $@
 
-export/native: export/native/lazycat export/native/assets
+export/native/README.md:
+	cp misc/README-native.md $@
+
+export/native: export/native/lazycat export/native/assets export/native/README.md
 	$(TAR_CMD) --create --gzip --file lazycat-native-$(UNAME)-$(VERSION).tar.gz --exclude=$@/src --transform "s/^export\/native/lazycat/" $@
 	mv lazycat-native-$(UNAME)-$(VERSION).tar.gz $@
 	$(DATE_CMD) -Iseconds
@@ -98,7 +104,10 @@ export/js/index.html: lazycat/data/index.html
 	mkdir -p $(@D)
 	cp lazycat/data/index.html $@
 
-export/js: export/js/lazycat.js export/js/index.html export/js/assets
+export/js/README.md:
+	cp misc/README-js.md $@
+
+export/js: export/js/lazycat.js export/js/index.html export/js/assets export/js/README.md
 	$(TAR_CMD) --create --gzip --file lazycat-js-$(VERSION).tar.gz --transform "s/^export\/js/lazycat/" $@
 	mv lazycat-js-$(VERSION).tar.gz $@
 	$(DATE_CMD) -Iseconds
