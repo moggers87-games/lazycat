@@ -2,6 +2,9 @@ SOURCE := $(shell find lazycat -type f)
 VERSION := $(shell cat .version || git describe --long --dirty)
 UNAME := $(shell uname)
 
+HASHLINK_DIR = hashlink-1.11
+HASHLINK_URL = https://github.com/HaxeFoundation/hashlink/archive/1.11.tar.gz
+
 CFLAGS = -O3
 LIBFLAGS =
 LIBOPENGL = -lGL
@@ -47,6 +50,13 @@ lint: .haxelib
 	haxelib install native.hxml --always
 	touch $@
 
+$(HASHLINK_DIR):
+	curl -L $(HASHLINK_URL) | tar -xz
+
+$(HASHLINK_DIR)/libhl.a: $(HASHLINK_DIR)
+	cd $(@D); patch <../static-hashlink.patch
+	cd $(@D); make libhl.a
+
 export/hl/lazycat.hl: $(SOURCE) .installed-deps-haxe-hl
 	mkdir -p $(@D)
 	haxe hl.hxml
@@ -63,22 +73,17 @@ export/hl: export/hl/lazycat.hl export/hl/assets export/hl/README.md
 	mv lazycat-hl-$(VERSION).tar.gz $@
 	$(DATE_CMD) -Iseconds
 
+libhl.a: $(HASHLINK_DIR)/libhl.a
+	cp $? $@
+
 export/native/src/lazycat.c: $(SOURCE) .installed-deps-haxe-native
 	mkdir -p $(@D)
 	haxe native.hxml
 	touch $@
 
-export/native/game.bin: export/native/src/lazycat.c
+export/native/lazycat: export/native/src/lazycat.c libhl.a
 	mkdir -p $(@D)
-	cp /usr/local/lib/fmt.hdll $(@D)
-	cp /usr/local/lib/openal.hdll $(@D)
-	cp /usr/local/lib/sdl.hdll $(@D)
-	cp /usr/local/lib/ui.hdll $(@D)
-	cp /usr/local/lib/libhl.* $(@D)
-	cd $(@D); gcc $(CFLAGS) -o $(@F) -std=c11 -Isrc src/lazycat.c $(LIBFLAGS) -lhl sdl.hdll ui.hdll fmt.hdll openal.hdll ui.hdll -lSDL2 -lm -lopenal $(LIBOPENGL)
-
-export/native/lazycat: export/native/game.bin scripts/native.sh
-	cp scripts/native.sh $@
+	gcc $(CFLAGS) -o $@ -std=c11 -I$(@D)/src $(@D)/src/lazycat.c libhl.a $(LIBFLAGS) -lSDL2 -lm -lopenal -lpthread -lpng -lz -lvorbisfile -luv -lturbojpeg $(LIBOPENGL)
 
 export/native/assets:
 	mkdir -p $@
