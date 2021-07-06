@@ -64,6 +64,7 @@ export/hl/lazycat.hl: $(SOURCE) .installed-deps-haxe-hl
 export/hl/assets:
 	mkdir -p $@
 	cp lazycat/assets/* $@
+	rm $@/*.mp3
 
 export/hl/README.md:
 	cp misc/README-hl.md $@
@@ -88,6 +89,7 @@ export/native/lazycat: export/native/src/lazycat.c libhl.a
 export/native/assets:
 	mkdir -p $@
 	cp lazycat/assets/* $@
+	rm $@/*.mp3
 
 export/native/README.md:
 	cp misc/README-native.md $@
@@ -100,6 +102,7 @@ export/native: export/native/lazycat export/native/assets export/native/README.m
 export/js/assets:
 	mkdir -p $@
 	cp lazycat/assets/* $@
+	rm $@/*.ogg
 
 export/js/lazycat.js: $(SOURCE) .installed-deps-haxe-js
 	mkdir -p $(@D)
