@@ -34,7 +34,7 @@ Run `make test-hl` to start the game.
 
 ### Native binary
 
-Install Hashlink and then run:
+Hashlink's requirements and then run:
 
 ```
 make export/native
