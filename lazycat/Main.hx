@@ -127,6 +127,11 @@ class Main extends hxd.App {
 	}
 
 	static function main() {
+		#if sys
+		var currentPath:String = Sys.programPath();
+		currentPath = haxe.io.Path.directory(currentPath);
+		Sys.setCwd(currentPath);
+		#end
 		new Main(new Assets());
 	}
 }

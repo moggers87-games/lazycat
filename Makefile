@@ -137,4 +137,4 @@ test-hl: export/hl
 
 .PHONY: test-native
 test-native: export/native
-	export/native/lazycat
+	cd export/native; ./lazycat
