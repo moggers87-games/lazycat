@@ -4,3 +4,5 @@
 /.installed-deps-*
 /node_modules
 /.version
+/hashlink-*
+/libhl.a
