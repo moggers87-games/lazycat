@@ -1,4 +1,4 @@
-# Lazycat
+# LazyCat
 
 ## How to run
 

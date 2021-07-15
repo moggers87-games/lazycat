@@ -2,7 +2,7 @@
 
 ![Build status badge](https://github.com/moggers87-games/lazycat/workflows/LazyCat%20Build/badge.svg)
 
-Lazycat! A cat with laser eyes hunts down some lasermice.
+LazyCat! A cat with laser eyes hunts down some lasermice.
 
 ## Build LazyCat
 
