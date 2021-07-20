@@ -4,6 +4,7 @@ import lazycat.Constants.MiscInts;
 import lazycat.Constants.MiscFloats;
 
 class Options extends gameUtils.Options {
+
 	public function new() {
 		super("lazycat");
 	}
