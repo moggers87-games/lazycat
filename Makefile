@@ -2,8 +2,10 @@ SOURCE := $(shell find lazycat -type f)
 VERSION := $(shell cat .version || git describe --long --dirty)
 UNAME := $(shell uname)
 
-HASHLINK_DIR = hashlink-1.11
-HASHLINK_URL = https://github.com/HaxeFoundation/hashlink/archive/1.11.tar.gz
+HASHLINK_VERSION = 8204c176cc961753ad545ef823ba30087c2eac25
+HASHLINK_DIR = hashlink-$(HASHLINK_VERSION)
+HASHLINK_URL = https://github.com/HaxeFoundation/hashlink/archive/$(HASHLINK_VERSION).tar.gz
+HASHLINK_LIBS = libhl.so fmt.hdll ui.hdll uv.hdll sdl.hdll openal.hdll
 
 CFLAGS = -O3
 LIBFLAGS =
@@ -26,9 +28,17 @@ all: export/js export/hl export/native
 .PHONY: release
 release: all export/source
 
+.PHONY: clean-hashlink
+clean-hashlink:
+	(cd $(HASHLINK_DIR) && make clean) || true
+
 .PHONY: clean
-clean:
+clean: clean-hashlink
 	rm -rf export
+
+.PHONY: clean-all
+clean-all: clean
+	rm -rf hashlink-*
 
 .PHONY: lint
 lint: .haxelib
@@ -53,11 +63,16 @@ lint: .haxelib
 $(HASHLINK_DIR):
 	curl -L $(HASHLINK_URL) | tar -xz
 
-$(HASHLINK_DIR)/libhl.a: $(HASHLINK_DIR)
-	cd $(@D); patch <../static-hashlink.patch
-	cd $(@D); make libhl.a
+$(HASHLINK_DIR)/hl $(HASHLINK_DIR)/libhl.a: $(HASHLINK_DIR)
+	cd $(@D) && make
 
-export/hl/lazycat.hl: $(SOURCE) .installed-deps-haxe-hl
+export/hl/lazycat: $(HASHLINK_DIR)/hl
+	cp $(HASHLINK_DIR)/hl $@
+
+$(foreach lib,$(HASHLINK_LIBS),export/hl/$(lib)): $(HASHLINK_DIR)/hl
+	cp $(HASHLINK_DIR)/$(@F) $@
+
+export/hl/hlboot.dat: $(SOURCE) .installed-deps-haxe-hl
 	mkdir -p $(@D)
 	haxe hl.hxml
 
@@ -69,22 +84,19 @@ export/hl/assets:
 export/hl/README.md:
 	cp misc/README-hl.md $@
 
-export/hl: export/hl/lazycat.hl export/hl/assets export/hl/README.md
+export/hl: export/hl/hlboot.dat export/hl/assets export/hl/README.md export/hl/lazycat $(foreach lib,$(HASHLINK_LIBS),export/hl/$(lib))
 	$(TAR_CMD) --create --gzip --file lazycat-hl-$(VERSION).tar.gz --exclude=$@/src --transform "s/^export\/hl/lazycat/" $@
 	mv lazycat-hl-$(VERSION).tar.gz $@
 	$(DATE_CMD) -Iseconds
-
-libhl.a: $(HASHLINK_DIR)/libhl.a
-	cp $? $@
 
 export/native/src/lazycat.c: $(SOURCE) .installed-deps-haxe-native
 	mkdir -p $(@D)
 	haxe native.hxml
 	touch $@
 
-export/native/lazycat: export/native/src/lazycat.c libhl.a
+export/native/lazycat: export/native/src/lazycat.c $(HASHLINK_DIR)/libhl.a
 	mkdir -p $(@D)
-	gcc $(CFLAGS) -o $@ -std=c11 -I$(@D)/src $(@D)/src/lazycat.c libhl.a $(LIBFLAGS) -lSDL2 -lm -lopenal -lpthread -lpng -lz -lvorbisfile -luv -lturbojpeg $(LIBOPENGL)
+	gcc $(CFLAGS) -o $@ -std=c11 -I$(@D)/src -I$(HASHLINK_DIR)/src $(@D)/src/lazycat.c $(HASHLINK_DIR)/libhl.a $(LIBFLAGS) -lSDL2 -lm -lopenal -lpthread -lpng -lz -lvorbisfile -luv -lturbojpeg $(LIBOPENGL)
 
 export/native/assets:
 	mkdir -p $@
@@ -133,8 +145,8 @@ test-js: export/js
 
 .PHONY: test-hl
 test-hl: export/hl
-	cd export/hl; hl lazycat.hl
+	cd export/hl && ./lazycat
 
 .PHONY: test-native
 test-native: export/native
-	cd export/native; ./lazycat
+	cd export/native && ./lazycat
