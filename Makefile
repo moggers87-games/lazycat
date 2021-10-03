@@ -2,16 +2,12 @@ SOURCE := $(shell find lazycat -type f)
 VERSION := $(shell cat .version || git describe --long --dirty)
 UNAME := $(shell uname)
 
-HASHLINK_VERSION = 8204c176cc961753ad545ef823ba30087c2eac25
-HASHLINK_DIR = hashlink-$(HASHLINK_VERSION)
-HASHLINK_URL = https://github.com/HaxeFoundation/hashlink/archive/$(HASHLINK_VERSION).tar.gz
-HASHLINK_LIBS = libhl.so fmt.hdll ui.hdll uv.hdll sdl.hdll openal.hdll
-
 CFLAGS = -O3
 LIBFLAGS =
 LIBOPENGL = -lGL
 TAR_CMD = tar
 DATE_CMD = date
+LIB_EXT = so
 
 ifeq ($(UNAME),Darwin)
 # taken from hashlink's Makefile
@@ -20,7 +16,13 @@ LIBFLAGS += -L/usr/local/opt/libjpeg-turbo/lib -L/usr/local/opt/jpeg-turbo/lib -
 LIBOPENGL = -framework OpenGL
 TAR_CMD = gtar
 DATE_CMD = gdate
+LIB_EXT = dylib
 endif
+
+HASHLINK_VERSION = 8204c176cc961753ad545ef823ba30087c2eac25
+HASHLINK_DIR = hashlink-$(HASHLINK_VERSION)
+HASHLINK_URL = https://github.com/HaxeFoundation/hashlink/archive/$(HASHLINK_VERSION).tar.gz
+HASHLINK_LIBS = libhl.$(LIB_EXT) fmt.hdll ui.hdll uv.hdll sdl.hdll openal.hdll
 
 .PHONY: all
 all: export/js export/hl export/native
