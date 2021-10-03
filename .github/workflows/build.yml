@@ -12,8 +12,8 @@ on:
     - cron: '04 07 * * *'
 
 env:
-  HASHLINK: "hashlink-1.11"
-  HASHLINK_URL: "https://github.com/HaxeFoundation/hashlink/archive/1.11.tar.gz"
+  HASHLINK: "hashlink-8204c176cc961753ad545ef823ba30087c2eac25"
+  HASHLINK_URL: "https://github.com/HaxeFoundation/hashlink/archive/8204c176cc961753ad545ef823ba30087c2eac25.tar.gz"
   HASHLINK_BREW_DEPS: "cmake jpeg-turbo libpng sdl2 libogg libvorbis openal-soft mbedtls libuv openssl gnu-tar coreutils"
   HASHLINK_APT_DEPS: "libpng-dev libturbojpeg-dev libvorbis-dev libopenal-dev libsdl2-dev libmbedtls-dev libuv1-dev"
 
@@ -44,9 +44,7 @@ jobs:
       - name: Build hashlink
         if: steps.cache-hashlink.outputs.cache-hit != 'true'
         run: |
-          curl -L ${{ env.HASHLINK_URL }} | tar -xz
-          cd ${{ env.HASHLINK }}
-          make
+          make ${{ env.HASHLINK }}/hl
 
   build-js:
     runs-on: ubuntu-latest
@@ -106,10 +104,6 @@ jobs:
         with:
           path: ${{ env.HASHLINK }}
           key: ${{ runner.os }}-${{ env.HASHLINK }}
-      - name: Install hashlink
-        run: |
-          cd ${{ env.HASHLINK }}
-          sudo make install
       - name: Build
         run: make export/hl
       - name: Upload
@@ -145,10 +139,6 @@ jobs:
         with:
           path: ${{ env.HASHLINK }}
           key: ${{ runner.os }}-${{ env.HASHLINK }}
-      - name: Install hashlink
-        run: |
-          cd ${{ env.HASHLINK }}
-          sudo make install
       - name: Build
         run: make export/native
       - name: Upload
