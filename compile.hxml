@@ -1,5 +1,5 @@
 --library heaps:1.9.1
---library game-utils:git:https://github.com/moggers87-games/game-utils.git#82459e13e7624cdad8c209f7be11f166e9e3d1d8
+--library game-utils:git:https://github.com/moggers87-games/game-utils.git#2f2b0b285446972ced89e91a747cf10c4446421c
 --library heeps:git:https://github.com/Yanrishatum/heeps.git#ac0252124fc3561cf6a90d95adc6bb880e648b77
 --main lazycat.Main
 --class-path lazycat
