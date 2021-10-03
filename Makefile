@@ -38,7 +38,7 @@ clean: clean-hashlink
 
 .PHONY: clean-all
 clean-all: clean
-	rm -rf hashlink-*
+	git clean -dfx
 
 .PHONY: lint
 lint: .haxelib
