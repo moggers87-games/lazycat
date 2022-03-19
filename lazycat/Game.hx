@@ -9,6 +9,7 @@ import lazycat.Constants.MiscInts;
 import lazycat.Constants.SmallFontNumbers;
 import lazycat.Constants.TextStrings;
 import gameUtils.RandomUtils;
+import gameUtils.State;
 
 enum abstract LaserNumbers(Int) from Int to Int {
 	var eyePulseMin = 8;
@@ -68,8 +69,8 @@ class Game extends hxd.App {
 	var timer:Int;
 	var timerText:h2d.Text;
 
-	var paused:Bool;
-	var winner:Bool;
+	var paused:State<Bool>;
+	var winner:State<Bool>;
 
 	public function new(assets:Assets) {
 		super();
@@ -78,8 +79,8 @@ class Game extends hxd.App {
 		timer = 0;
 		highScore = assets.options.get("highscore");
 
-		paused = false;
-		winner = false;
+		paused = new State(false);
+		winner = new State(false);
 
 		assets.initFonts();
 		assets.initMusic();
@@ -106,7 +107,7 @@ class Game extends hxd.App {
 		mice.hasUpdate = true;
 		mice.hasRotationScale = true;
 		for (i in 0...MouseNumbers.initialCount) {
-			var mouse = new Mouse(assets.mouseTile());
+			var mouse = new Mouse(assets.mouseTile(), paused);
 			mice.add(mouse);
 			mouse.x = ImageSizes.screenWidth / 2;
 			mouse.y = ImageSizes.screenHeight / 2;
@@ -138,12 +139,12 @@ class Game extends hxd.App {
 
 		s2d.addEventListener(checkPause);
 		s2d.addEventListener(moveCat);
+
+		paused.addChangeHandler(setPause);
+		winner.addChangeHandler(setWinner);
 	}
 
 	function moveCat(event:hxd.Event) {
-		if (winner || paused) {
-			return;
-		}
 		if (event.kind == EMove) {
 			event.propagate = false;
 			catFace.x = event.relX - catFace.scaledWidth / 2;
@@ -152,60 +153,73 @@ class Game extends hxd.App {
 	}
 
 	function checkPause(event:hxd.Event) {
-		if (winner) {
-			if (Controls.BACK.contains(event.keyCode)) {
-				backToMain();
-			}
-			else {
-				return;
-			}
-		}
-
 		switch (event.kind) {
 			case EFocusLost:
-				paused = true;
+				paused.change(true);
 			case EKeyDown:
-				if (paused && Controls.BACK.contains(event.keyCode)) {
+				if (paused.value && Controls.BACK.contains(event.keyCode)) {
 					backToMain();
 				}
 				else if (Controls.PAUSE.contains(event.keyCode)) {
-					paused = !paused;
+					paused.change(!paused.value);
 				}
 				else {
-					paused = false;
+					paused.change(false);
 				}
 			case EPush:
-				paused = false;
+				paused.change(false);
 			default:
 				return;
 		}
+	}
 
-		assets.music.pause = paused;
-
-		if (!paused) {
-			hxd.System.setNativeCursor(hxd.Cursor.Hide);
+	function setPause(oldState:Bool, newState:Bool) {
+		if (oldState == newState) {
+			return;
 		}
-		else {
+		assets.music.pause = newState;
+
+		if (newState) {
 			hxd.System.setNativeCursor(hxd.Cursor.Default);
-		}
-
-		for (el in mice.getElements()) {
-			var mouse:Mouse = cast(el, Mouse);
-			mouse.paused = paused;
-		}
-
-		if (paused && pausedText.parent == null) {
+			assets.stopLaser();
 			s2d.addChild(pausedOverlay);
 			s2d.addChild(pausedText);
 			pausedText.x = ImageSizes.screenWidth / 2 - pausedText.textWidth / 2;
 			pausedText.y = ImageSizes.screenHeight / 2 / 2 - pausedText.textHeight / 2;
 			addBackText(pausedText);
+
+			s2d.removeEventListener(moveCat);
 		}
-		else if (!paused && pausedText.parent != null) {
+		else {
+			hxd.System.setNativeCursor(hxd.Cursor.Hide);
 			s2d.removeChild(pausedOverlay);
 			s2d.removeChild(pausedText);
 			s2d.removeChild(backText);
+
+			s2d.addEventListener(moveCat);
 		}
+	}
+
+	function setWinner(oldState:Bool, newState:Bool) {
+		hxd.System.setNativeCursor(hxd.Cursor.Default);
+		assets.music.pause = true;
+		assets.stopLaser();
+		s2d.addChild(pausedOverlay);
+		s2d.over(timerText);
+		s2d.over(highScoreText);
+
+		if (timer < highScore) {
+			assets.options.set("highscore", timer);
+		}
+		generateWinningText();
+
+		s2d.addEventListener(function (event:hxd.Event) {
+			if (event.kind == EKeyDown && Controls.BACK.contains(event.keyCode)) {
+				backToMain();
+			}
+		});
+		s2d.removeEventListener(moveCat);
+		s2d.removeEventListener(checkPause);
 	}
 
 	function generateWinningText() {
@@ -250,8 +264,7 @@ class Game extends hxd.App {
 	}
 
 	override function update(dt:Float) {
-		if (paused || winner) {
-			assets.stopLaser();
+		if (paused.value || winner.value) {
 			return;
 		}
 
@@ -259,23 +272,7 @@ class Game extends hxd.App {
 		catEyes.remove();
 
 		if (mice.isEmpty()) {
-			hxd.System.setNativeCursor(hxd.Cursor.Default);
-			winner = true;
-			assets.music.pause = true;
-			s2d.addChild(pausedOverlay);
-			s2d.over(timerText);
-			s2d.over(highScoreText);
-
-			if (timer < highScore) {
-				assets.options.set("highscore", timer);
-			}
-			generateWinningText();
-
-			s2d.addEventListener(function (event:hxd.Event) {
-				if (event.kind == EKeyDown && Controls.BACK.contains(event.keyCode)) {
-					backToMain();
-				}
-			});
+			winner.change(true);
 
 			return;
 		}
@@ -285,7 +282,7 @@ class Game extends hxd.App {
 
 		if (miceCount < MouseNumbers.maxCount && hxd.Timer.frameCount % MouseNumbers.reproduceFrame == 0) {
 			var lastMouse:Mouse = cast(mice.getElements().next(), Mouse);
-			var mouse = new Mouse(assets.mouseTile());
+			var mouse = new Mouse(assets.mouseTile(), paused);
 			mice.add(mouse);
 			miceCount += 1;
 			mouse.x = lastMouse.x;
@@ -416,11 +413,11 @@ class Mouse extends ElementWithCentre {
 
 	var health:Int;
 	var direction:Int;
-	public var paused:Bool;
+	var paused:State<Bool>;
 
-	public function new(t:h2d.Tile) {
+	public function new(t:h2d.Tile, paused:State<Bool>) {
 		super(t);
-		paused = false;
+		this.paused = paused;
 		health = MouseNumbers.initialHealth;
 		scale = MiscFloats.mouseScalePercent;
 		changeDirection();
@@ -431,7 +428,7 @@ class Mouse extends ElementWithCentre {
 	}
 
 	override function update(dt:Float):Bool {
-		if (paused) {
+		if (paused.value) {
 			return true;
 		}
 		var distance:Int = RandomUtils.randomInt(MouseNumbers.distanceMin, MouseNumbers.distanceMax);
