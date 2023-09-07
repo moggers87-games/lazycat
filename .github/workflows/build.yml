@@ -37,7 +37,7 @@ jobs:
           brew link mbedtls@2
       - name: Cache hashlink
         id: cache-hashlink
-        uses: actions/cache@v2
+        uses: actions/cache@v3
         with:
           path: ${{ env.HASHLINK }}
           key: ${{ runner.os }}-${{ env.HASHLINK }}
@@ -51,7 +51,7 @@ jobs:
   build-js:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v4
         with:
           fetch-depth: 0
       - uses: krdlab/setup-haxe@v1
@@ -60,7 +60,7 @@ jobs:
       - name: Build
         run: make export/js
       - name: Upload
-        uses: actions/upload-artifact@v2
+        uses: actions/upload-artifact@v3
         with:
           name: lazycat
           path: export/js/lazycat-*.tar.gz
@@ -68,7 +68,7 @@ jobs:
   build-source:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v4
         with:
           fetch-depth: 0
       - uses: krdlab/setup-haxe@v1
@@ -77,7 +77,7 @@ jobs:
       - name: Build
         run: make export/source
       - name: Upload
-        uses: actions/upload-artifact@v2
+        uses: actions/upload-artifact@v3
         with:
           name: lazycat
           path: export/source/lazycat-*.tar.gz
@@ -89,7 +89,7 @@ jobs:
         os: [ubuntu-latest, macos-latest]
     needs: compile-hashlink
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v4
         with:
           fetch-depth: 0
       - uses: krdlab/setup-haxe@v1
@@ -107,14 +107,14 @@ jobs:
           brew link mbedtls@2
       - name: Cache hashlink
         id: cache-hashlink
-        uses: actions/cache@v2
+        uses: actions/cache@v3
         with:
           path: ${{ env.HASHLINK }}
           key: ${{ runner.os }}-${{ env.HASHLINK }}
       - name: Build
         run: make export/hl
       - name: Upload
-        uses: actions/upload-artifact@v2
+        uses: actions/upload-artifact@v3
         with:
           name: lazycat
           path: export/hl/lazycat-*.tar.gz
@@ -126,7 +126,7 @@ jobs:
         os: [ubuntu-latest, macos-latest]
     needs: compile-hashlink
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v4
         with:
           fetch-depth: 0
       - uses: krdlab/setup-haxe@v1
@@ -144,14 +144,14 @@ jobs:
           brew link mbedtls@2
       - name: Cache hashlink
         id: cache-hashlink
-        uses: actions/cache@v2
+        uses: actions/cache@v3
         with:
           path: ${{ env.HASHLINK }}
           key: ${{ runner.os }}-${{ env.HASHLINK }}
       - name: Build
         run: make export/native
       - name: Upload
-        uses: actions/upload-artifact@v2
+        uses: actions/upload-artifact@v3
         with:
           name: lazycat
           path: export/native/lazycat-*.tar.gz
@@ -159,7 +159,7 @@ jobs:
   lint:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v4
         with:
           fetch-depth: 0
       - uses: krdlab/setup-haxe@v1
