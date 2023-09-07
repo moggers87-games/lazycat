@@ -8,12 +8,10 @@ on:
       - meow
     tags:
       - "*"
-  schedule:
-    - cron: '04 07 * * *'
 
 env:
-  HASHLINK: "hashlink-8204c176cc961753ad545ef823ba30087c2eac25"
-  HASHLINK_URL: "https://github.com/HaxeFoundation/hashlink/archive/8204c176cc961753ad545ef823ba30087c2eac25.tar.gz"
+  HASHLINK: "hashlink-7aa39e591b6f0d312d27f323179e8b60abb9fb01"
+  HASHLINK_URL: "https://github.com/HaxeFoundation/hashlink/archive/7aa39e591b6f0d312d27f323179e8b60abb9fb01.tar.gz"
   HASHLINK_BREW_DEPS: "cmake jpeg-turbo libpng sdl2 libogg libvorbis openal-soft mbedtls@2 libuv openssl gnu-tar coreutils"
   HASHLINK_APT_DEPS: "libpng-dev libturbojpeg-dev libvorbis-dev libopenal-dev libsdl2-dev libmbedtls-dev libuv1-dev"
 
@@ -26,7 +24,7 @@ jobs:
     steps:
       - uses: krdlab/setup-haxe@v1
         with:
-          haxe-version: "4.1.4"
+          haxe-version: "4.3.1"
       - name: Install Linux dependencies
         if: matrix.os == 'ubuntu-latest'
         run: |
@@ -58,7 +56,7 @@ jobs:
           fetch-depth: 0
       - uses: krdlab/setup-haxe@v1
         with:
-          haxe-version: "4.1.4"
+          haxe-version: "4.3.1"
       - name: Build
         run: make export/js
       - name: Upload
@@ -75,7 +73,7 @@ jobs:
           fetch-depth: 0
       - uses: krdlab/setup-haxe@v1
         with:
-          haxe-version: "4.1.4"
+          haxe-version: "4.3.1"
       - name: Build
         run: make export/source
       - name: Upload
@@ -96,7 +94,7 @@ jobs:
           fetch-depth: 0
       - uses: krdlab/setup-haxe@v1
         with:
-          haxe-version: "4.1.4"
+          haxe-version: "4.3.1"
       - name: Install Linux dependencies
         if: matrix.os == 'ubuntu-latest'
         run: |
@@ -133,7 +131,7 @@ jobs:
           fetch-depth: 0
       - uses: krdlab/setup-haxe@v1
         with:
-          haxe-version: "4.1.4"
+          haxe-version: "4.3.1"
       - name: Install Linux dependencies
         if: matrix.os == 'ubuntu-latest'
         run: |
@@ -166,6 +164,6 @@ jobs:
           fetch-depth: 0
       - uses: krdlab/setup-haxe@v1
         with:
-          haxe-version: "4.1.4"
+          haxe-version: "4.3.1"
       - name: Lint
         run: make lint

@@ -73,8 +73,7 @@ class Main extends hxd.App {
 		#if hl
 		gameUtils.FileMacro.getContent("lazycat/data/creditsHashlink.txt") +
 		#end
-		gameUtils.FileMacro.getContent("lazycat/data/creditsHeaps.txt") +
-		gameUtils.FileMacro.getContent("lazycat/data/creditsHeeps.txt");
+		gameUtils.FileMacro.getContent("lazycat/data/creditsHeaps.txt");
 
 		new TextScroller(assets, TextStrings.credits, text);
 	}
@@ -121,7 +120,7 @@ class Main extends hxd.App {
 	}
 
 	override function loadAssets(done) {
-		var loader:cherry.res.ManifestLoader = cherry.fs.ManifestBuilder.initManifest("assets");
+		var loader:lazycat.loader.ManifestLoader = lazycat.loader.ManifestBuilder.initManifest("assets");
 		loader.onLoaded = done;
 		loader.loadManifestFiles();
 	}
