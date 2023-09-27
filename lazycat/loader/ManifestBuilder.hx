@@ -58,6 +58,7 @@ class ManifestBuilder {
 
 	public static function build(tree:hxd.res.FileTree, ?options:hxd.res.EmbedOptions, ?manifestOptions:ManifestOptions):Bytes {
 		var manifest = new Array<ManifestFileInfo>();
+		scan(tree, options, manifest);
 
 		if (manifestOptions == null) {
 			manifestOptions = { format: ManifestFormat.json };
