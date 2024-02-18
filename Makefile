@@ -1,6 +1,6 @@
-NAME = lazycat
+NAME := $(shell cat .name)
 SOURCE := $(shell find $(NAME) -type f)
-VERSION := $(shell cat .version || git describe --long --dirty || git describe --long --dirty --all)
+VERSION := $(shell cat .version || git describe --long --dirty || git describe --long --dirty --all | sed 's/\//-/g')
 UNAME := $(shell uname)
 
 CFLAGS = -O3
@@ -20,7 +20,7 @@ DATE_CMD = gdate
 LIB_EXT = dylib
 endif
 
-HASHLINK_VERSION = 7aa39e591b6f0d312d27f323179e8b60abb9fb01
+HASHLINK_VERSION = df137d0408725ef564fd8d9defd3322a3cd3b91a
 HASHLINK_DIR = hashlink-$(HASHLINK_VERSION)
 HASHLINK_URL = https://github.com/HaxeFoundation/hashlink/archive/$(HASHLINK_VERSION).tar.gz
 HASHLINK_LIBS = libhl.$(LIB_EXT) fmt.hdll ui.hdll uv.hdll sdl.hdll openal.hdll
@@ -82,10 +82,10 @@ export/hl/hlboot.dat: $(SOURCE) .installed-deps-haxe-hl
 export/hl/assets:
 	mkdir -p $@
 	cp $(NAME)/assets/* $@
-	rm $@/*.mp3
+	rm -f $@/*.mp3
 
 export/hl/README.md:
-	cp misc/README-hl.md $@
+	cp misc/README-hl.md $@ || cp README.md $@
 
 export/hl: export/hl/hlboot.dat export/hl/assets export/hl/README.md export/hl/$(NAME) $(foreach lib,$(HASHLINK_LIBS),export/hl/$(lib))
 	$(TAR_CMD) --create --gzip --file $(NAME)-hl-$(VERSION).tar.gz --exclude=$@/src --transform "s/^export\/hl/$(NAME)/" $@
@@ -104,10 +104,10 @@ export/native/$(NAME): export/native/src/$(NAME).c $(HASHLINK_DIR)/libhl.a
 export/native/assets:
 	mkdir -p $@
 	cp $(NAME)/assets/* $@
-	rm $@/*.mp3
+	rm -f $@/*.mp3
 
 export/native/README.md:
-	cp misc/README-native.md $@
+	cp misc/README-native.md $@ || cp README.md $@
 
 export/native: export/native/$(NAME) export/native/assets export/native/README.md
 	$(TAR_CMD) --create --gzip --file $(NAME)-native-$(UNAME)-$(VERSION).tar.gz --exclude=$@/src --transform "s/^export\/native/$(NAME)/" $@
@@ -117,7 +117,7 @@ export/native: export/native/$(NAME) export/native/assets export/native/README.m
 export/js/assets:
 	mkdir -p $@
 	cp $(NAME)/assets/* $@
-	rm $@/*.ogg
+	rm -f $@/*.ogg
 
 export/js/$(NAME).js: $(SOURCE) .installed-deps-haxe-js
 	mkdir -p $(@D)
@@ -128,7 +128,7 @@ export/js/index.html: $(NAME)/data/index.html
 	cp $(NAME)/data/index.html $@
 
 export/js/README.md:
-	cp misc/README-js.md $@
+	cp misc/README-js.md $@ || cp README.md $@
 
 export/js: export/js/$(NAME).js export/js/index.html export/js/assets export/js/README.md
 	$(TAR_CMD) --create --gzip --file $(NAME)-js-$(VERSION).tar.gz --transform "s/^export\/js/$(NAME)/" $@
