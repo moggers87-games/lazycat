@@ -1,5 +1,6 @@
-SOURCE := $(shell find lazycat -type f)
-VERSION := $(shell cat .version || git describe --long --dirty)
+NAME = lazycat
+SOURCE := $(shell find $(NAME) -type f)
+VERSION := $(shell cat .version || git describe --long --dirty || git describe --long --dirty --all)
 UNAME := $(shell uname)
 
 CFLAGS = -O3
@@ -45,7 +46,7 @@ clean-all: clean
 .PHONY: lint
 lint: .haxelib
 	haxelib install checkstyle
-	haxelib run checkstyle -s lazycat --exitcode
+	haxelib run checkstyle -s $(NAME) --exitcode
 
 .haxelib:
 	haxelib newrepo
@@ -68,7 +69,7 @@ $(HASHLINK_DIR):
 $(HASHLINK_DIR)/hl $(HASHLINK_DIR)/libhl.a: $(HASHLINK_DIR)
 	cd $(@D) && make
 
-export/hl/lazycat: $(HASHLINK_DIR)/hl
+export/hl/$(NAME): $(HASHLINK_DIR)/hl
 	cp $(HASHLINK_DIR)/hl $@
 
 $(foreach lib,$(HASHLINK_LIBS),export/hl/$(lib)): $(HASHLINK_DIR)/hl
@@ -80,64 +81,64 @@ export/hl/hlboot.dat: $(SOURCE) .installed-deps-haxe-hl
 
 export/hl/assets:
 	mkdir -p $@
-	cp lazycat/assets/* $@
+	cp $(NAME)/assets/* $@
 	rm $@/*.mp3
 
 export/hl/README.md:
 	cp misc/README-hl.md $@
 
-export/hl: export/hl/hlboot.dat export/hl/assets export/hl/README.md export/hl/lazycat $(foreach lib,$(HASHLINK_LIBS),export/hl/$(lib))
-	$(TAR_CMD) --create --gzip --file lazycat-hl-$(VERSION).tar.gz --exclude=$@/src --transform "s/^export\/hl/lazycat/" $@
-	mv lazycat-hl-$(VERSION).tar.gz $@
+export/hl: export/hl/hlboot.dat export/hl/assets export/hl/README.md export/hl/$(NAME) $(foreach lib,$(HASHLINK_LIBS),export/hl/$(lib))
+	$(TAR_CMD) --create --gzip --file $(NAME)-hl-$(VERSION).tar.gz --exclude=$@/src --transform "s/^export\/hl/$(NAME)/" $@
+	mv $(NAME)-hl-$(VERSION).tar.gz $@
 	$(DATE_CMD) -Iseconds
 
-export/native/src/lazycat.c: $(SOURCE) .installed-deps-haxe-native
+export/native/src/$(NAME).c: $(SOURCE) .installed-deps-haxe-native
 	mkdir -p $(@D)
 	haxe native.hxml
 	touch $@
 
-export/native/lazycat: export/native/src/lazycat.c $(HASHLINK_DIR)/libhl.a
+export/native/$(NAME): export/native/src/$(NAME).c $(HASHLINK_DIR)/libhl.a
 	mkdir -p $(@D)
-	gcc $(CFLAGS) -o $@ -std=c11 -I$(@D)/src -I$(HASHLINK_DIR)/src $(@D)/src/lazycat.c $(HASHLINK_DIR)/libhl.a $(LIBFLAGS) -lSDL2 -lm -lopenal -lpthread -lpng -lz -lvorbisfile -luv -lturbojpeg $(LIBOPENGL)
+	gcc $(CFLAGS) -o $@ -std=c11 -I$(@D)/src -I$(HASHLINK_DIR)/src $(@D)/src/$(NAME).c $(HASHLINK_DIR)/libhl.a $(LIBFLAGS) -lSDL2 -lm -lopenal -lpthread -lpng -lz -lvorbisfile -luv -lturbojpeg $(LIBOPENGL)
 
 export/native/assets:
 	mkdir -p $@
-	cp lazycat/assets/* $@
+	cp $(NAME)/assets/* $@
 	rm $@/*.mp3
 
 export/native/README.md:
 	cp misc/README-native.md $@
 
-export/native: export/native/lazycat export/native/assets export/native/README.md
-	$(TAR_CMD) --create --gzip --file lazycat-native-$(UNAME)-$(VERSION).tar.gz --exclude=$@/src --transform "s/^export\/native/lazycat/" $@
-	mv lazycat-native-$(UNAME)-$(VERSION).tar.gz $@
+export/native: export/native/$(NAME) export/native/assets export/native/README.md
+	$(TAR_CMD) --create --gzip --file $(NAME)-native-$(UNAME)-$(VERSION).tar.gz --exclude=$@/src --transform "s/^export\/native/$(NAME)/" $@
+	mv $(NAME)-native-$(UNAME)-$(VERSION).tar.gz $@
 	$(DATE_CMD) -Iseconds
 
 export/js/assets:
 	mkdir -p $@
-	cp lazycat/assets/* $@
+	cp $(NAME)/assets/* $@
 	rm $@/*.ogg
 
-export/js/lazycat.js: $(SOURCE) .installed-deps-haxe-js
+export/js/$(NAME).js: $(SOURCE) .installed-deps-haxe-js
 	mkdir -p $(@D)
 	haxe js.hxml
 
-export/js/index.html: lazycat/data/index.html
+export/js/index.html: $(NAME)/data/index.html
 	mkdir -p $(@D)
-	cp lazycat/data/index.html $@
+	cp $(NAME)/data/index.html $@
 
 export/js/README.md:
 	cp misc/README-js.md $@
 
-export/js: export/js/lazycat.js export/js/index.html export/js/assets export/js/README.md
-	$(TAR_CMD) --create --gzip --file lazycat-js-$(VERSION).tar.gz --transform "s/^export\/js/lazycat/" $@
-	mv lazycat-js-$(VERSION).tar.gz $@
+export/js: export/js/$(NAME).js export/js/index.html export/js/assets export/js/README.md
+	$(TAR_CMD) --create --gzip --file $(NAME)-js-$(VERSION).tar.gz --transform "s/^export\/js/$(NAME)/" $@
+	mv $(NAME)-js-$(VERSION).tar.gz $@
 	$(DATE_CMD) -Iseconds
 
 export/source: $(SOURCE)
 	mkdir -p $@
 	echo $(VERSION) > .version
-	git archive --output=export/source/lazycat-source-$(VERSION).tar.gz --prefix=lazycat/ --format=tar.gz --add-file=.version HEAD
+	git archive --output=export/source/$(NAME)-source-$(VERSION).tar.gz --prefix=$(NAME)/ --format=tar.gz --add-file=.version HEAD
 	rm .version
 	$(DATE_CMD) -Iseconds
 
@@ -147,8 +148,8 @@ test-js: export/js
 
 .PHONY: test-hl
 test-hl: export/hl
-	cd export/hl && ./lazycat
+	cd export/hl && ./$(NAME)
 
 .PHONY: test-native
 test-native: export/native
-	cd export/native && ./lazycat
+	cd export/native && ./$(NAME)
